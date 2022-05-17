@@ -1,0 +1,21 @@
+.d-flex.flex-column.flex-shrink-0.p-3.text-white.bg-dark(style='width: 280px;min-height: 100vh;')
+  a.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-white.text-decoration-none(href='/')
+    svg.bi.me-2(width='40', height='32')
+      use(xlink:href='#bootstrap')
+    span.fs-4 Sidebar
+  hr
+  ul.nav.nav-pills.flex-column.mb-auto
+    li.nav-item
+      a.nav-link.collapsed(href='#', aria-current='page' data-bs-toggle='collapse', data-bs-target='#home-collapse', aria-expanded='false')
+        svg.bi.me-2(width='16', height='16')
+            use(xlink:href='#table')
+        |           Users
+    #home-collapse.collapse(style='')
+        ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+            li
+                a.text-white(href='/Cpanel/Users/new') Add new user
+            li
+                a.text-white(href='#') Updates
+            li
+                a.text-white(href='#') Reports
+  hr
