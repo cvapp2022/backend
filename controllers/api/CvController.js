@@ -36,6 +36,7 @@ exports.Get = function (req, res, next) {
     var popobj = [
         {
             path: 'CVExp',
+            options: { sort: { 'ExpSort':"ascending" }},
             populate: [
                 {
                     path: 'ExpSkill'
@@ -47,6 +48,7 @@ exports.Get = function (req, res, next) {
         },
         {
             path: 'CVEdu',
+            options: { sort: { 'EduSort':"ascending" }},
             populate: [
                 {
                     path: 'EduSkill'
@@ -57,16 +59,19 @@ exports.Get = function (req, res, next) {
             path: 'CVProj',
             populate: [{
                 path: 'ProjSkill'
-            }]
+            }],
+            options: { sort: { 'ProjSort':"ascending" }},
         },
         {
-            path: 'CVReff'
+            path: 'CVReff',
+            options: { sort: { 'RefSort':"ascending" }},
         },
         {
             path: 'CVContact'
         },
         {
-            path: 'CVOrg'
+            path: 'CVOrg',
+            options: { sort: { 'OrgSort':"ascending" }},
         },
         {
             path: 'CVAw',

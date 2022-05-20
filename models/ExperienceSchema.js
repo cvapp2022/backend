@@ -12,6 +12,7 @@ const CvExp = new Schema({
         ExpJob:{type:String,required:true},
         ExpFrom:{type:Date,required:true},
         ExpTo:{type:Date,required:true},
+        ExpSort:{type:Number,default:0,required:true},
         ExpSkill:[{type: mongoose.Schema.Types.ObjectId, ref: 'BLCVSkill'}]
       });
       

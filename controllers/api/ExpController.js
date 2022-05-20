@@ -195,3 +195,33 @@ exports.Delete = function (req, res, next) {
 }
 
 
+exports.ChangeSort=function(req,res){
+
+
+
+    //validate input
+    var items = req.body.items;
+
+    if(items.length > 0){
+
+        items.forEach(item => {
+            ExpModel.findOneAndUpdate({_id:item.id},{ExpSort:item.sort+1},function(err,res){
+
+                console.log(err)
+
+            });
+        });
+        ExpModel.find({CVId:req.body.CvId},function(err,result){
+
+            if(!err && result){
+                res.json(result)
+            }
+            else{
+                res.send('unable to fetch ')
+            }
+
+        })
+
+    }
+
+}

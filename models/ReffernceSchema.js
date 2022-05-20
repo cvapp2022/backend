@@ -11,6 +11,7 @@ const CvRef = new Schema({
   RefJob:{type:String,required:true}, 
   RefMail:{type:String,required:true},
   RefPhone:{type:String,required:true},
+  RefSort:{type:Number,default:0,required:true}
 });
        
 

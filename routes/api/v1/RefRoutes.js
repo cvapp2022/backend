@@ -15,6 +15,7 @@ router.put('/:refId',auth.validateToken,Validate.Refvalidate,RefController.Updat
 
 router.delete('/:refId',auth.validateToken,RefController.Delete);
 
+router.post('/changeSort',auth.validateToken,RefController.ChangeSort)
 
 
 module.exports = router;

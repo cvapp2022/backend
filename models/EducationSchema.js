@@ -12,6 +12,7 @@ const CvEdu = new Schema({
   EduType:{type:String,required:true},
   EduFrom:{type:Date,required:true},
   EduTo:{type:Date,required:true},
+  EduSort:{type:Number,default:0,required:true},
   EduSkill:[{type: mongoose.Schema.Types.ObjectId, ref: 'BLCVSkill'}]
 });
     

@@ -15,5 +15,6 @@ router.put('/:expId', auth.validateToken,Validate.ExpValidate,ExpController.Upda
 
 router.delete('/:expId',auth.validateToken,ExpController.Delete);
 
+router.post('/changeSort',auth.validateToken,ExpController.ChangeSort)
 
 module.exports = router;

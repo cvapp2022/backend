@@ -15,6 +15,6 @@ router.put('/:eduId',auth.validateToken,Validate.EduValidate,EduController.Updat
 
 router.delete('/:eduId',auth.validateToken,EduController.Delete);
 
-
+router.post('/changeSort',auth.validateToken,EduController.ChangeSort)
 
 module.exports = router;

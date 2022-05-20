@@ -161,7 +161,7 @@ exports.Delete=function(req,res,next){
         if(!err && result){
             //Get CV & Remove Edu Id From CVEdu
             facade.PullCvArr(result.CVId,'CVEdu',EduId)
-            EduModel.find({CVId:result.CvId},function(err2,result2){
+            EduModel.find({CVId:result.CVId},function(err2,result2){
 
                 if(!err2){
                     return  res.json({
@@ -190,4 +190,37 @@ exports.Delete=function(req,res,next){
             });
         }
     })
+}
+exports.ChangeSort=function(req,res){
+
+
+
+    //validate input
+    var items = req.body.items;
+
+    if(items.length > 0){
+
+        items.forEach(item => {
+            EduModel.findOneAndUpdate({_id:item.id},{EduSort:item.sort+1},function(err,res){
+
+                console.log(err)
+
+            });
+        });
+        EduModel.find({CVId:req.body.CvId},function(err,result){
+
+            if(!err && result){
+
+                console.log(result)
+
+                res.json(result)
+            }
+            else{
+                res.send('unable to fetch ')
+            }
+
+        })
+
+    }
+
 }

@@ -14,4 +14,6 @@ router.put('/:orgId',auth.validateToken,Validate.OrgValidate,OrgController.Updat
 
 router.delete('/:orgId',auth.validateToken,OrgController.Delete)
 
+router.post('/changeSort',auth.validateToken,OrgController.ChangeSort)
+
 module.exports = router;

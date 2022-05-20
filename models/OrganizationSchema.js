@@ -12,6 +12,7 @@ const CvOrg = new Schema({
         OrgJob:{type:String,required:true},
         OrgFrom:{type:Date,required:true},
         OrgTo:{type:Date,required:true},
+        OrgSort:{type:Number,default:0,required:true},
         
       });
       

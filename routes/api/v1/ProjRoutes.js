@@ -13,4 +13,6 @@ router.put('/:projId',auth.validateToken,Validate.ProjValidate,ProjController.Up
 
 router.delete('/:projId',auth.validateToken,ProjController.Delete)
 
+router.post('/changeSort',auth.validateToken,ProjController.ChangeSort)
+
 module.exports = router;

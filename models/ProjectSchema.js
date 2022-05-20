@@ -11,6 +11,7 @@ const CvProj = new Schema({
   ProjDesc:{type:String,required:true},
   ProjJob:{type:String}, 
   ProjUrl:{type:String},
+  ProjSort:{type:Number,default:0,required:true},
   ProjImage:{type:String,default:'default proj image'},
   ProjDate:{type:Date,required:true},
   ProjSkill:[{type: mongoose.Schema.Types.ObjectId, ref: 'BLCVSkill'}]
