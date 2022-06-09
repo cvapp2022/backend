@@ -1,18 +1,13 @@
-const express = require("express")
-const router = express.Router()
-const meet =require('../../../../controllers/api/mn/MeetController')
+const express = require('express')
+const Validate = require('../../../../others/validation');
+const auth = require('../../../../others/auth');
 
-// Create a new blog
-router.post("/", meet.createonemeet);
+const MeetController = require('../../../../controllers/api/mentorship/MnMeetController')
 
-// retrieve all meets for the meeting
-router.get("/all/:id", meet.findallmeet);
-
-// retrieve one meets for the meeting
-router.get("/:id", meet.findonemeet);
-
-// delete a single meet
-router.delete("/:id", meet.deleteonemeet)
+var router = express.Router();
 
 
-module.exports = router
+router.post('/',auth.validateToken,Validate.MnMeetValidate,MeetController.Save)
+
+
+module.exports = router;

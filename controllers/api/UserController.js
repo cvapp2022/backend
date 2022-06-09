@@ -102,7 +102,11 @@ exports.Login = function(req,res,next){
         if(!err){
      
             if(result === 'null'){
-                return  res.send('wrong username or password user null');
+                return res.json({
+                    success:false,
+                    payload:null,
+                    msg:'Wrong username or password' 
+                });
             }
 
             if(result){
@@ -126,16 +130,18 @@ exports.Login = function(req,res,next){
                 }
                 else{
                     return res.status(200).json({
-                        success:false,
-                        items:{message:'WrongUserNameOrPassword',code:2465}
+                        success: false,
+                        payload: null,
+                        msg: 'Wrong username or password'
                     });
                 }
 
             }
             else{
                 return res.status(200).json({
-                    success:false,
-                    items:{message:'WrongUserNameOrPassword',code:2465}
+                    success: false,
+                    payload: null,
+                    msg: 'Wrong username or password'
                 });
             }
 

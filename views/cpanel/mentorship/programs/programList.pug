@@ -1,0 +1,18 @@
+extends ../../layout
+
+
+block content
+
+    .row 
+
+        each program in programs
+            .col-sm-4  
+                .card 
+                    .d-flex.flex-column
+                        img(src="", alt="program image")
+                        h4.text-center=program.ProgName
+                        .d-flex 
+                            a(href="/Cpanel/Mentorship/Programs/"+program._id).btn.btn-primary manage
+
+
+

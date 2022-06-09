@@ -1,8 +1,11 @@
-const ConatctModel = require('../models/ContactSchema');
-const CVMetaModel = require('../models/CvMetaSchema');
-const CvModel = require('../models/CvSchema');
-const SkillModel = require('../models/SkillSchema');
+const ConatctModel = require('../models/cv/ContactSchema');
+const CVMetaModel = require('../models/cv/CvMetaSchema');
+const CvModel = require('../models/cv/CvSchema');
+const SkillModel = require('../models/cv/SkillSchema');
 const UserModel = require('../models/UserSchema');
+
+const population=require('./populations')
+
 const { google } = require('googleapis');
 
 
@@ -144,62 +147,7 @@ exports.CheckCv = function (CvId, UserId, callback) {
 
 exports.GetUser = function (UserId, pop, callback) {
 
-    var popObj = [{
-        path: 'CVUCvId',
-        populate: [
-            {
-                path: 'CVExp',
-                populate: [
-                    {
-                        path: 'ExpSkill'
-                    }
-                ]
-            },
-            {
-                path: 'CVSkill'
-            },
-            {
-                path: 'CVEdu',
-                populate: [
-                    {
-                        path: 'EduSkill'
-                    }
-                ]
-            },
-            {
-                path: 'CVProj',
-                populate: [{
-                    path: 'ProjSkill'
-                }]
-            },
-            {
-                path: 'CVReff'
-            },
-            {
-                path: 'CVContact'
-            },
-            {
-                path: 'CVOrg'
-            },
-            {
-                path: 'CVAw',
-                options: { sort: { 'AwSort':"ascending" }}
-            },
-            {
-                path: 'CvMeta'
-            },
-            {
-                path: 'CVImg'
-            }
-
-
-
-        ]
-    },
-    {
-        path: 'CVUClId'
-    }
-    ]
+    var popObj = population.UserPopulate;
 
     if (pop) {
         var populate = popObj;

@@ -13,6 +13,7 @@ const UserModel = new Schema({
     CVUserPlan:{type:Number,default:0}, // free Plan
     CVUCvId:[{type:mongoose.Schema.Types.ObjectId, ref: 'BLCV'}],
     CVUClId:[{type:mongoose.Schema.Types.ObjectId, ref: 'BLCL'}],
+    MNRequests:[{type:mongoose.Schema.Types.ObjectId, ref: 'MnRequest'}],
     CVUserPass:{type:String,min:8,required:true} 
 });
       

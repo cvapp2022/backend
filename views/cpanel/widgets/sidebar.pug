@@ -1,21 +1,65 @@
 .d-flex.flex-column.flex-shrink-0.p-3.text-white.bg-dark(style='width: 280px;min-height: 100vh;')
   a.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-white.text-decoration-none(href='/')
-    svg.bi.me-2(width='40', height='32')
+    svg.bi.me-2(width='40' height='32')
       use(xlink:href='#bootstrap')
     span.fs-4 Sidebar
   hr
   ul.nav.nav-pills.flex-column.mb-auto
     li.nav-item
-      a.nav-link.collapsed(href='#', aria-current='page' data-bs-toggle='collapse', data-bs-target='#home-collapse', aria-expanded='false')
-        svg.bi.me-2(width='16', height='16')
-            use(xlink:href='#table')
+      a.nav-link.collapsed(href='#' aria-current='page' data-bs-toggle='collapse' data-bs-target='#users-collapse' aria-expanded='false')
+        svg.bi.me-2(width='16' height='16')
+          use(xlink:href='#table')
         |           Users
-    #home-collapse.collapse(style='')
-        ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+    #users-collapse.collapse(style='')
+      ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+        li
+          a.text-white(href='/Cpanel/Users/new') Add new user
+
+    li.nav-item
+      a.nav-link.collapsed(href='#' aria-current='page' data-bs-toggle='collapse' data-bs-target='#templates-collapse' aria-expanded='false')
+        svg.bi.me-2(width='16' height='16')
+          use(xlink:href='#table')
+        |           Templates
+    #templates-collapse.collapse(style='')
+      ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+        li 
+          a.text-white(href='/Cpanel/Templates/list')  Templates list
+        li
+          a.text-white(href='/Cpanel/Templates/new') Add new template
+
+
+    li.nav-item
+      a.nav-link.collapsed(href='#' aria-current='page' data-bs-toggle='collapse' data-bs-target='#mentorship-collapse' aria-expanded='false')
+        svg.bi.me-2(width='16' height='16')
+          use(xlink:href='#table')
+        |           Mentorship
+
+    #mentorship-collapse.collapse(style='')
+      ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+        li.nav-item
+          a.nav-link.collapsed(href='#' aria-current='page' data-bs-toggle='collapse' data-bs-target='#mentorship-programs-collapse' aria-expanded='false')
+            svg.bi.me-2(width='16' height='16')
+              use(xlink:href='#table')
+            |            Programs
+        #mentorship-programs-collapse.collapse(style='')
+          ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
+            li 
+              a.text-white(href='/Cpanel/Mentorship/Programs/list')  programs list
             li
-                a.text-white(href='/Cpanel/Users/new') Add new user
+              a.text-white(href='/Cpanel/Mentorship/Programs/new') Add new program
+        li.nav-item
+          a.nav-link.collapsed(href='#' aria-current='page' data-bs-toggle='collapse' data-bs-target='#mentorship-mentor-collapse' aria-expanded='false')
+            svg.bi.me-2(width='16' height='16')
+              use(xlink:href='#table')
+            |           Mentors
+        #mentorship-mentor-collapse.collapse(style='')
+          ul.btn-toggle-nav.list-unstyled.fw-normal.pb-1.small
             li
-                a.text-white(href='#') Updates
-            li
-                a.text-white(href='#') Reports
+              a.text-white(href='/Cpanel/Mentorship/Mentors/new') Add new mentor
+
+
+
+
+
+
   hr

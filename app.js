@@ -3,18 +3,19 @@ const mongoose = require('mongoose')
 const morgan = require('morgan');
 const dotenv =require('dotenv').config()
 const pug = require('pug');
-const path = require('path');
-const cors = require("cors");
+const path = require('path'); 
 const app = express()
 const port = process.env.PORT||5000;
 
 const httpServer = require("http").createServer(app);
-const io = require("socket.io")(httpServer, {
+const io = require("socket.io")(httpServer, 
+  {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   }
-});
+}
+);
 const signalServer = require('simple-signal-server')(io)
 const sockets=require('./others/sockets')
 
@@ -23,22 +24,23 @@ const AppRoutes = require('./routes/api/v1/AppRoutes')
 
 const ClRoutes = require('./routes/api/v1/ClRoutes')
 
-const CvRoutes = require('./routes/api/v1/CvRoutes')
-const ExpRoutes = require('./routes/api/v1/ExpRoutes')
-const EduRoutes= require('./routes/api/v1/EduRoutes')
-const SkillRoutes = require('./routes/api/v1/SkRoutes')
+const CvRoutes = require('./routes/api/v1/cv/CvRoutes')
+const ExpRoutes = require('./routes/api/v1/cv/ExpRoutes')
+const EduRoutes= require('./routes/api/v1/cv/EduRoutes')
+const SkillRoutes = require('./routes/api/v1/cv/SkRoutes')
 const UserRoutes = require('./routes/api/v1/UserRoutes')
-const ReffRoutes = require('./routes/api/v1/RefRoutes')
-const ProjRoutes = require('./routes/api/v1/ProjRoutes')
-const OrgRoutes = require('./routes/api/v1/OrgRoutes')
-const AwRoutes = require('./routes/api/v1/AwRoutes')
-const ContactRoutes = require('./routes/api/v1/ContactRoutes')
+const ReffRoutes = require('./routes/api/v1/cv/RefRoutes')
+const ProjRoutes = require('./routes/api/v1/cv/ProjRoutes')
+const OrgRoutes = require('./routes/api/v1/cv/OrgRoutes')
+const AwRoutes = require('./routes/api/v1/cv/AwRoutes')
+const ContactRoutes = require('./routes/api/v1/cv/ContactRoutes')
 
-
-const MeetRoutes =require('./routes/api/v1/mn/MeetRoutes')
-const SessionRoutes= require('./routes/api/v1/mn/SessionRoutes')
-
-
+//mn
+const MnRequestRoutes= require('./routes/api/v1/mn/MnRequestRoutes')
+const MnMentorRoutes=require('./routes/api/v1/mn/MentorRoutes')
+const MnPorgramRoutes=require('./routes/api/v1/mn/ProgramRoutes')
+const MnMeetRoutes=require('./routes/api/v1/mn/MeetRoutes')
+const MnSessionRoutes=require('./routes/api/v1/mn/meet/SessionRoutes')
 
 const ValidationRoutes = require('./routes/api/v1/ValidationRoutes')
 
@@ -46,7 +48,9 @@ const ValidationRoutes = require('./routes/api/v1/ValidationRoutes')
 //cpanel routes 
 const CpanelRoutes = require('./routes/cpanel/CpanelRoutes')
 const CUsersRoutes = require('./routes/cpanel/CUsersRoutes')
-
+const CMnProgramsRoutes =require('./routes/cpanel/CpMnRoutes/MnProgramRoutes')
+const CMnMentorRoutes = require('./routes/cpanel/CpMnRoutes/MnMentorRoutes')
+const CTemplateRoutes = require('./routes/cpanel/CTemplateRoutes')
 
 //sockets 
 
@@ -142,11 +146,11 @@ app.use('/api/v1/Org',OrgRoutes)
 app.use('/api/v1/Aw',AwRoutes)
 app.use('/api/v1/User/',UserRoutes)
 app.use('/api/v1/Contact/',ContactRoutes)
-
-app.use('/api/v1/Meet/',MeetRoutes)
-app.use('/api/v1/Session/',SessionRoutes)
-
-
+app.use('/api/v1/Mn/Request',MnRequestRoutes)
+app.use('/api/v1/Mn/Mentor',MnMentorRoutes)
+app.use('/api/v1/Mn/Program',MnPorgramRoutes)
+app.use('/api/v1/Mn/Meet',MnMeetRoutes)
+app.use('/api/v1/Mn/Session',MnSessionRoutes)
 
 
 
@@ -155,6 +159,9 @@ app.use('/api/v1/Validation',ValidationRoutes)
 
 app.use('/Cpanel',CpanelRoutes)
 app.use('/Cpanel/Users',CUsersRoutes)
+app.use('/Cpanel/Mentorship/Programs/',CMnProgramsRoutes)
+app.use('/Cpanel/Mentorship/Mentors',CMnMentorRoutes)
+app.use('/Cpanel/Templates',CTemplateRoutes)
 
 
 //Server
