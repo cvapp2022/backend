@@ -108,8 +108,8 @@ exports.ExpValidate = [
         //Exp Skill Validation
 
         //Exp Cv validation
-        // check('ExpCvI').notEmpty()
-        // .withMessage('Experience Cv Required'),
+        check('ExpCvI').notEmpty()
+                .withMessage('Experience Cv Required'),
 
 ]
 //End Save Experience Validation
@@ -160,8 +160,8 @@ exports.EduValidate = [
                 .withMessage('Education To Date Is Required '),
 
         //Edu Cv validation
-        // check('EduCvI').notEmpty()
-        // .withMessage('Education Cv Required'),
+        check('EduCvI').notEmpty()
+                .withMessage('Education Cv Required'),
 
         //Edu Skill Validation
         // check('EduSkillI').notEmpty()
@@ -198,8 +198,8 @@ exports.Refvalidate = [
         check('RefPhoneI').isMobilePhone()
                 .withMessage('Reff Mobile Number Is Wrong'),
 
-        // check('RefCvI').notEmpty()
-        // .withMessage('Reff Cv is required'),
+        check('RefCvI').notEmpty()
+                .withMessage('Reff Cv is required'),
 
 ];
 //Save Reff Validation End
@@ -218,8 +218,8 @@ exports.ProjValidate = [
         check('ProjDateI').notEmpty()
                 .withMessage('Project Date is required'),
 
-        // check('ProjCvI').notEmpty()
-        // .withMessage('Project Cv is required'),
+        check('ProjCvI').notEmpty()
+                .withMessage('Project Cv is required'),
 
 ]
 //End Project validate
@@ -243,6 +243,8 @@ exports.OrgValidate = [
 
         check('OrgToI').notEmpty()
                 .withMessage('Organization To Date Is Required '),
+        check('OrgCvI').notEmpty()
+                .withMessage('Project Cv is required'),
 ]
 //end organization validate
 
@@ -260,6 +262,8 @@ exports.AwValidate = [
 
         check('AwDateI').notEmpty()
                 .withMessage('Award From Date Is Required'),
+        check('AwCvI').notEmpty()
+                .withMessage('Project Cv is required'),
 ]
 //end Award validate
 

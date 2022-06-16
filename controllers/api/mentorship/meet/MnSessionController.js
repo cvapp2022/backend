@@ -28,7 +28,7 @@ module.exports.Save = function (req, res) {
     var saveSession = new SessionModel();
     var random = (Math.random() + 1).toString(36).substring(4);
     saveSession.SessionId = random;
-    saveSession.SessiomMeet=req.body.MeetIdI;
+    saveSession.SessionMeet=req.body.MeetIdI;
     saveSession.save(function (err, result) {
 
         if (!err && result) {

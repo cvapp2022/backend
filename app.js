@@ -12,12 +12,17 @@ const io = require("socket.io")(httpServer,
   {
   cors: {
     origin: "*",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+    transports: ['websocket', 'polling'],
+    extraHeaders: {
+      'Access-Control-Allow-Credentials': 'omit'
+    }
+  },
+  allowEIO3: true 
 }
 );
 const signalServer = require('simple-signal-server')(io)
-const sockets=require('./others/sockets')
+
 
 //Require routes 
 const AppRoutes = require('./routes/api/v1/AppRoutes')
@@ -53,6 +58,7 @@ const CMnMentorRoutes = require('./routes/cpanel/CpMnRoutes/MnMentorRoutes')
 const CTemplateRoutes = require('./routes/cpanel/CTemplateRoutes')
 
 //sockets 
+const MessageSocket=require('./sockets/mn/MessageSocket')
 
 const rooms = new Map()
 signalServer.on('discover', (request) => {
@@ -71,6 +77,7 @@ signalServer.on('discover', (request) => {
   });
   log('joined ' + roomId + ' ' + memberId)
 })
+
 signalServer.on('disconnect', (socket) => {
   let memberId = socket.id;
   let roomId = socket.roomId;
@@ -93,6 +100,22 @@ function log(message, data) {
      }
   }
 }
+
+io.on('connection', function(socket){ 
+
+  console.log('socket connectctd')
+  MessageSocket.MessageSocket(io,socket)
+  //io2.ws(socket)
+})
+
+// io.on('connection', function(socket) {
+//   console.log('WebSockets connected')
+
+//   socket.on('SEND_MESSAGE', function(data) {
+// 		console.log('from send msg ',data);
+// 	});
+
+// })
 // sockets.discover(signalServer);
 // sockets.disconnect(signalServer);
 // sockets.request(signalServer);

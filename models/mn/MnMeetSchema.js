@@ -10,7 +10,8 @@ const MnMeetModel = new Schema({
     MeetStatus:{type:Boolean,default:0},
     MeetMentor:{ type: mongoose.Schema.Types.ObjectId, ref: 'MnMentor' },
     MeetSession:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMeetSession'}],
-    MeetRates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnMeetRate' }], 
+    MeetRates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnMeetRate' }],
+    MeetRequest:{ type: mongoose.Schema.Types.ObjectId, ref: 'MnRequest' }
 });
 
 module.exports = mongoose.model('MnMeet', MnMeetModel);

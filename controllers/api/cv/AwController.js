@@ -6,7 +6,7 @@ const facade = require('../../../others/facades');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 
-exports.Save = function (req, res, next) {
+exports.Save = function (req, res) {
 
     //validate Inputs 
     const errors = validationResult(req);
@@ -28,56 +28,57 @@ exports.Save = function (req, res, next) {
                 payload: null,
                 msg: 'Invalid cv'
             });
-
         }
-    })
+        else {
+            //gett sort 
+            AwModel.findOne({ CVId: CvId }, {}, { sort: { 'AwSort': -1 } }, function (errSort, resultSort) {
 
-    //gett sort 
-    AwModel.findOne({ CVId: CvId }, {}, { sort: { 'AwSort': -1 } }, function (errSort, resultSort) {
 
-        
-        if (!errSort) {
-            let sortVal;
-            if(!resultSort ){
-                sortVal=1;
-            }
-            else{
-                sortVal=resultSort.AwSort+1;
-            }
+                if (!errSort) {
+                    let sortVal;
+                    if (!resultSort) {
+                        sortVal = 1;
+                    }
+                    else {
+                        sortVal = resultSort.AwSort + 1;
+                    }
 
-            var saveAw = new AwModel();
-            saveAw.CVId = CvId;
-            saveAw.AwTitle = req.body.AwTitleI;
-            saveAw.AwDesc = req.body.AwDescI;
-            saveAw.AwJob = req.body.AwJobI;
-            saveAw.AwDate = req.body.AwDateI;
-            saveAw.AwSort=sortVal;
+                    var saveAw = new AwModel();
+                    saveAw.CVId = CvId;
+                    saveAw.AwTitle = req.body.AwTitleI;
+                    saveAw.AwDesc = req.body.AwDescI;
+                    saveAw.AwJob = req.body.AwJobI;
+                    saveAw.AwDate = req.body.AwDateI;
+                    saveAw.AwSort = sortVal;
 
-            saveAw.save(function (err, result) {
-                console.log(err)
-                if (!err) {
-                   facade.PushToCvArr(CvId, 'CVAw', saveAw._id)
+                    saveAw.save(function (err, result) {
+                        console.log(err)
+                        if (!err) {
+                            facade.PushToCvArr(CvId, 'CVAw', saveAw._id)
 
-                    //get list of Award
-                    AwModel.find({ CVId: CvId }).exec(function (err2, result2) {
+                            //get list of Award
+                            AwModel.find({ CVId: CvId }).exec(function (err2, result2) {
 
-                        if (!err2) {
-                            return res.status(201).json({
-                                status: true,
-                                items: {
-                                    item: result,
-                                    list: result2
+                                if (!err2) {
+                                    return res.status(201).json({
+                                        status: true,
+                                        items: {
+                                            item: result,
+                                            list: result2
+                                        }
+                                    });
                                 }
-                            });
+                            })
+
                         }
                     })
 
                 }
+
             })
-
         }
-
     })
+
 
 
 
@@ -110,8 +111,6 @@ exports.Update = function (req, res, next) {
         AwDesc: req.body.AwDescI,
         AwJob: req.body.AwJobI,
         AwDate: req.body.AwDateI,
-
-
     }
 
     AwModel.findOneAndUpdate({ _id: AwId }, Update, function (err, result) {
@@ -186,31 +185,31 @@ exports.Delete = function (req, res, next) {
 }
 
 
-exports.ChangeSort=function(req,res){
+exports.ChangeSort = function (req, res) {
 
 
 
     //validate input
     var items = req.body.items;
 
-    if(items.length > 0){
+    if (items.length > 0) {
 
         items.forEach(item => {
-            AwModel.findOneAndUpdate({_id:item.id},{AwSort:item.sort+1},function(err,res){
+            AwModel.findOneAndUpdate({ _id: item.id }, { AwSort: item.sort + 1 }, function (err, res) {
 
                 console.log(err)
 
             });
         });
-        AwModel.find({CVId:req.body.CvId},function(err,result){
+        AwModel.find({ CVId: req.body.CvId }, function (err, result) {
 
-            if(!err && result){
+            if (!err && result) {
 
                 console.log(result)
 
                 res.json(result)
             }
-            else{
+            else {
                 res.send('unable to fetch ')
             }
 

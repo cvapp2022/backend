@@ -20,4 +20,10 @@ router.delete('/:cvId',auth.validateToken,CvController.Delete)
 const pUpload = upload.fields([{ name: 'ImgI', maxCount: 1 ,fieldSize:2046}])
 router.post('/:cvId/setImg',auth.validateToken,pUpload,CvController.SetImg)
 
+router.put('/:cvId/changeSort',auth.validateToken,CvController.ChangeSort)
+
+router.put('/:cvId/addSection',auth.validateToken,CvController.AddSection)
+
+router.put('/:cvId/removeSection',auth.validateToken,CvController.RemoveSection)
+
 module.exports = router;

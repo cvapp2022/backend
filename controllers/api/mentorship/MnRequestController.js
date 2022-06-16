@@ -10,54 +10,62 @@ const populate =require('../../../others/populations')
 module.exports.Get = function (req, res) {
 
     var type = req.params.type;
-
-    if (type === 'user') {
-        //get requests for user
-        var user = req.user;
-
-        MnRequestModel.find({ ReqUser:user._id}, function (err2, result2) {
-
-            if (!err2) {
-                return res.json({
-                    success: true,
-                    payload: result2,
-                    message: 'Requests Successfully loaded'
-                })
-            }
-
-        }).populate(populate.RequestPopulation)
-
+    var user = req.user;
+    let query;
+    if(type === 'user'){
+        query={ ReqUser:user._id}
     }
-    else if (type === 'mentor') {
+    else if(type === 'mentor'){
+        query={ ReqMentor:user._id};
+    }
+
+    MnRequestModel.find(query, function (err2, result2) {
+
+        if (!err2) {
+            return res.json({
+                success: true,
+                payload: result2,
+                message: 'Requests Successfully loaded'
+            })
+        }
+
+    }).populate(populate.RequestPopulation)
+
+
+
         //get requests for mentor 
 
-        var mentor = req.user;
-        MnMentorModel.findById(mentor._id, function (err, result) {
+        // var mentor = req.user;
+        // MnRequestModel.find({ ReqMentor:mentor._id}, function (err2, result2) {
+        //     if (!err2 && result2 ) {
+        //         return res.json({
+        //             success: true,
+        //             payload: result2,
+        //             message: 'Requests Successfully loaded'
+        //         })
+        //     }
+        // }).populate(populate.RequestPopulation)
 
-            if (!err && result) {
-                MnRequestModel.find({ ReqProg: { $in: result.MentorPrograms }, MentorStatus: 1 }, function (err2, result2) {
+        // MnMentorModel.findById(mentor._id, function (err, result) {
 
-                    if (!err2) {
-                        return res.json({
-                            success: true,
-                            payload: result2,
-                            message: 'Requests Successfully loaded'
-                        })
-                    }
-                    else{
-                        console.log(err2)
-                    }
+        //     if (!err && result) {
+        //         MnRequestModel.find({ ReqProg: { $in: result.MentorPrograms }}, function (err2, result2) {
+        //             console.log(err2,result)
+        //             if (!err2 && result2 ) {
+        //                 return res.json({
+        //                     success: true,
+        //                     payload: result2,
+        //                     message: 'Requests Successfully loaded'
+        //                 })
+        //             }
+        //             else{
+        //                 console.log(err2)
+        //             }
 
-                }).populate(populate.RequestPopulation)
-            }
+        //         }).populate(populate.RequestPopulation)
+        //     }
 
-        })
-
-
-    }
-    else {
-        //errpr
-    }
+        // })
 
 }
 

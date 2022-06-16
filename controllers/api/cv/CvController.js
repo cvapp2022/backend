@@ -17,6 +17,7 @@ const SkillModel = require('../../../models/cv/SkillSchema')
 const AwModel = require('../../../models/cv/AwSchema');
 
 const facades = require('../../../others/facades');
+const population = require('../../../others/populations')
 
 
 
@@ -33,58 +34,9 @@ exports.Get = function (req, res, next) {
         });
     }
 
-    var popobj = [
-        {
-            path: 'CVExp',
-            options: { sort: { 'ExpSort': "ascending" } },
-            populate: [
-                {
-                    path: 'ExpSkill'
-                }
-            ]
-        },
-        {
-            path: 'CVSkill'
-        },
-        {
-            path: 'CVEdu',
-            options: { sort: { 'EduSort': "ascending" } },
-            populate: [
-                {
-                    path: 'EduSkill'
-                }
-            ]
-        },
-        {
-            path: 'CVProj',
-            populate: [{
-                path: 'ProjSkill'
-            }],
-            options: { sort: { 'ProjSort': "ascending" } },
-        },
-        {
-            path: 'CVReff',
-            options: { sort: { 'RefSort': "ascending" } },
-        },
-        {
-            path: 'CVContact'
-        },
-        {
-            path: 'CVOrg',
-            options: { sort: { 'OrgSort': "ascending" } },
-        },
-        {
-            path: 'CVAw',
-            options: { sort: { 'AwSort': "ascending" } }
-        },
-        {
-            path: 'CVImg'
-        }
-    ]
-
 
     //get Cv
-    CvModel.findById(CvId).populate(popobj).exec(function (err, result) {
+    CvModel.findById(CvId).populate(population.CvPopulate).exec(function (err, result) {
 
         if (!err && result) {
 
@@ -441,9 +393,173 @@ exports.SetImg = async function (req, res) {
             msg: 'file is required'
         });
     }
+}
 
 
+exports.ChangeSort = function (req, res) {
 
+    //validate param
+    var CvId = req.params.cvId;
+    if (!ObjectId.isValid(CvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+
+    if (!req.body.SortI) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'validation error'
+        });
+    }
+
+    //update sections sort
+    CvModel.findOneAndUpdate({ _id: CvId }, { CvSections: req.body.SortI }, function (err, result) {
+
+        if (!err && result) {
+            return res.json({
+                success: true,
+                payload: null,
+                msg: 'Sections sort successfully updated'
+            });
+        }
+    })
+}
+
+exports.AddSection = function (req, res) {
+
+    //validate param
+    var CvId = req.params.cvId;
+    if (!ObjectId.isValid(CvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+
+
+    //validate inputs 
+    if (!req.body.SectionNameI) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Validation error'
+        });
+    }
+
+    //get cv sections 
+    CvModel.findById(CvId, function (err, result) {
+
+        if (!err && result) {
+
+            //check section is unique
+            var oldSections = result.CvSections
+            oldSections.find((item) => {
+                if (item.name === req.body.SectionNameI) {
+                    return res.json({
+                        success: false,
+                        payload: null,
+                        msg: 'Section Already in use'
+                    });
+                }
+                else {
+                    var newSection = { name: req.body.SectionNameI }
+                    var combineSections = [
+                        oldSections,
+                        newSection
+                    ]
+                    var newSections = combineSections.flat();
+
+                    result.CvSections = newSections
+                    result.save(function (err2, result2) {
+
+                        if (!err2 && result2) {
+                            return res.json({
+                                success: true,
+                                payload: result2,
+                                msg: 'Section Successfully updated'
+                            });
+                        }
+                        // else {
+                        //     // return res.json({
+                        //     //     success: false,
+                        //     //     payload: null,
+                        //     //     msg: 'Unable to update section'
+                        //     // });
+                        // }
+
+                    });
+
+
+                }
+            });
+
+        }
+
+    })
+}
+
+exports.RemoveSection = function (req, res) {
+
+
+    //validate param
+    var CvId = req.params.cvId;
+    if (!ObjectId.isValid(CvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+
+
+    //validate inputs 
+    if (!req.body.SectionNameI) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Validation error'
+        });
+    }
+
+    //get cv sections 
+    CvModel.findById(CvId, function (err, result) {
+
+        if (!err && result) {
+
+            var newSections = [];
+            var oldSections = result.CvSections;
+
+            oldSections.find((item) => {
+
+                if (item.name !== req.body.SectionNameI) {
+                    newSections.push(item);
+                }
+            })
+            result.CvSections=newSections;
+            result.save(function(err2,result2){
+                if(!err2 && result2){
+                    return res.json({
+                        success: true,
+                        payload: result2,
+                        msg: 'Section Successfully updated'
+                    });
+                }
+
+            })
+        }
+        else {
+            return res.json({
+                success: false,
+                payload: null,
+                msg: 'unable to find cv'
+            });
+        }
+    })
 
 
 }

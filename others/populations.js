@@ -56,14 +56,20 @@ exports.UserPopulate = [{
         [
             {
                 path: 'ReqProg',
-                
+
                 //model:'MnRequest'
             },
             {
                 path: 'ReqMeets',
-                populate:[{
-                    path: 'MeetSession'
-                }]
+                populate: [
+                    {
+                        path: 'MeetSession',
+                        populate:[{
+                            path:'SessionMessage'
+                        }]
+                    },
+
+                ]
 
             }
         ]
@@ -83,7 +89,10 @@ exports.RequestPopulation = [
         path: 'ReqMeets',
         populate:
             [{
-                path: 'MeetSession'
+                path: 'MeetSession',
+                populate:[{
+                    path:'SessionMessage'
+                }]
             }]
     }
 ];
@@ -102,3 +111,55 @@ exports.MentorPopulation = [
         path: 'MentorRequests'
     }
 ]
+
+exports.CvPopulate = [
+
+    {
+        path: 'CVExp',
+        options: { sort: { 'ExpSort': "ascending" } },
+        populate: [
+            {
+                path: 'ExpSkill'
+            }
+        ]
+    },
+    {
+        path: 'CVSkill'
+    },
+    {
+        path: 'CVEdu',
+        options: { sort: { 'EduSort': "ascending" } },
+        populate: [
+            {
+                path: 'EduSkill'
+            }
+        ]
+    },
+    {
+        path: 'CVProj',
+        populate: [{
+            path: 'ProjSkill'
+        }],
+        options: { sort: { 'ProjSort': "ascending" } },
+    },
+    {
+        path: 'CVReff',
+        options: { sort: { 'RefSort': "ascending" } },
+    },
+    {
+        path: 'CVContact'
+    },
+    {
+        path: 'CVOrg',
+        options: { sort: { 'OrgSort': "ascending" } },
+    },
+    {
+        path: 'CVAw',
+        options: { sort: { 'AwSort': "ascending" } }
+    },
+    {
+        path: 'CVImg'
+    }
+
+]
+

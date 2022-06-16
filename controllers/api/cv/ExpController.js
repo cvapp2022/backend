@@ -20,55 +20,47 @@ exports.Save = function (req, res, next) {
 
     //get && Cv id 
     var CvId = req.body.ExpCvI;
+    console.log(CvId)
     facade.CheckCv(CvId, req.user._id, function (x) {
-
         if (!x) {
             return res.json({
                 success: false,
                 payload: null,
                 msg: 'Invalid cv'
             });
+        }
+        else {
+            //Save Exp
+            var saveExp = new ExpModel()
+            saveExp.CVId = CvId;
+            saveExp.ExpTitle = req.body.ExpTitleI;
+            saveExp.ExpDesc = req.body.ExpDescI;
+            saveExp.ExpJob = req.body.ExpJobI;
+            saveExp.ExpFrom = req.body.ExpFromI;
+            saveExp.ExpTo = req.body.ExpToI;
+            saveExp.ExpSkill = req.body.ExpSkillI;
+            saveExp.save(function (err, result) {
 
+                if (!err) {
+                    facade.PushToCvArr(CvId, 'CVExp', saveExp._id)
+                    //get list of Experiences
+                    ExpModel.find({ CVId: CvId },).populate({ path: 'ExpSkill' }).exec(function (err2, result2) {
+                        if (!err2) {
+                            return res.status(201).json({
+                                status: true,
+                                items: {
+                                    item: result,
+                                    list: result2
+                                }
+                            });
+                        }
+                    })
+                }
+            })
         }
     })
     //res.send(CvId)
 
-    //Save Exp
-    var saveExp = new ExpModel()
-    saveExp.CVId = CvId;
-    saveExp.ExpTitle = req.body.ExpTitleI;
-    saveExp.ExpDesc = req.body.ExpDescI;
-    saveExp.ExpJob = req.body.ExpJobI;
-    saveExp.ExpFrom = req.body.ExpFromI;
-    saveExp.ExpTo = req.body.ExpToI;
-    saveExp.ExpSkill = req.body.ExpSkillI;
-    saveExp.save(function (err, result) {
-
-        if (!err) {
-
-            facade.PushToCvArr(CvId, 'CVExp', saveExp._id)
-
-
-            //get list of Experiences
-            var ExpList = ExpModel.find({ CVId: CvId },).populate({ path: 'ExpSkill' }).exec(function (err2, result2) {
-
-                if (!err2) {
-
-                    return res.status(201).json({
-                        status: true,
-                        items: {
-                            item: result,
-                            list: result2
-                        }
-                    });
-                }
-            })
-
-
-
-        }
-
-    })
 }
 
 
@@ -195,28 +187,28 @@ exports.Delete = function (req, res, next) {
 }
 
 
-exports.ChangeSort=function(req,res){
+exports.ChangeSort = function (req, res) {
 
 
 
     //validate input
     var items = req.body.items;
 
-    if(items.length > 0){
+    if (items.length > 0) {
 
         items.forEach(item => {
-            ExpModel.findOneAndUpdate({_id:item.id},{ExpSort:item.sort+1},function(err,res){
+            ExpModel.findOneAndUpdate({ _id: item.id }, { ExpSort: item.sort + 1 }, function (err, res) {
 
                 console.log(err)
 
             });
         });
-        ExpModel.find({CVId:req.body.CvId},function(err,result){
+        ExpModel.find({ CVId: req.body.CvId }, function (err, result) {
 
-            if(!err && result){
+            if (!err && result) {
                 res.json(result)
             }
-            else{
+            else {
                 res.send('unable to fetch ')
             }
 
