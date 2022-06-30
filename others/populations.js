@@ -3,6 +3,7 @@ exports.UserPopulate = [{
     populate: [
         {
             path: 'CVExp',
+            options: { sort: { 'ExpSort': "ascending" } },
             populate: [
                 {
                     path: 'ExpSkill'
@@ -14,6 +15,7 @@ exports.UserPopulate = [{
         },
         {
             path: 'CVEdu',
+            options: { sort: { 'EduSort': "ascending" } },
             populate: [
                 {
                     path: 'EduSkill'
@@ -24,27 +26,77 @@ exports.UserPopulate = [{
             path: 'CVProj',
             populate: [{
                 path: 'ProjSkill'
-            }]
+            }],
+            options: { sort: { 'ProjSort': "ascending" } },
         },
         {
-            path: 'CVReff'
+            path: 'CVReff',
+            options: { sort: { 'RefSort': "ascending" } },
         },
         {
             path: 'CVContact'
         },
         {
-            path: 'CVOrg'
+            path: 'CVOrg',
+            options: { sort: { 'OrgSort': "ascending" } },
         },
         {
             path: 'CVAw',
             options: { sort: { 'AwSort': "ascending" } }
         },
         {
-            path: 'CvMeta'
+            path:'CVTemplate',
         },
         {
             path: 'CVImg'
         }
+        // {
+        //     path: 'CVExp',
+        //     populate: [
+        //         {
+        //             path: 'ExpSkill'
+        //         }
+        //     ]
+        // },
+        // {
+        //     path: 'CVSkill'
+        // },
+        // {
+        //     path: 'CVEdu',
+        //     populate: [
+        //         {
+        //             path: 'EduSkill'
+        //         }
+        //     ]
+        // },
+        // {
+        //     path: 'CVProj',
+        //     populate: [{
+        //         path: 'ProjSkill'
+        //     }]
+        // },
+        // {
+        //     path: 'CVReff'
+        // },
+        // {
+        //     path: 'CVContact'
+        // },
+        // {
+        //     path: 'CVOrg'
+        // },
+        // {
+        //     path: 'CVAw',
+        //     options: { sort: { 'AwSort': "ascending" } }
+        // },
+        // {
+        //     path: 'CvMeta'
+        // },
+        // {
+        //     path: 'CVImg'
+        // },
+        // {
+        //     path:'CVTemplate',
+        // },
     ]
 },
 {
@@ -158,8 +210,16 @@ exports.CvPopulate = [
         options: { sort: { 'AwSort': "ascending" } }
     },
     {
+        path:'CVTemplate',
+    },
+    {
         path: 'CVImg'
     }
 
 ]
 
+exports.PostPopulate =[
+    {
+        path:'PostCategory'
+    }
+]

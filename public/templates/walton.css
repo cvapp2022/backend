@@ -1,0 +1,28 @@
+.profile-bg{
+    background-color: rgb(166, 171, 192);
+    color:white
+}
+
+.skills-section > h4, .experience-section > h4 , .education-section > h4 {
+    color: rgb(166, 171, 192);
+    border-bottom: 2px #a6abc0 solid;
+}
+.skillOne{
+    background-color: rgb(166, 171, 192);
+    border-radius: 4px;
+    width: fit-content;
+    color: white;
+}
+.expOne > h5{
+    color: rgb(166, 171, 192);
+}
+.expOne > p{
+    font-size:12px;
+}
+.date{
+    font-style: italic;
+    color: #a6abc0;
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom:0 !important;
+}

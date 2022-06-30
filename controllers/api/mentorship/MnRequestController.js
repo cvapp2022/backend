@@ -3,7 +3,7 @@ const MnRequestModel = require('../../../models/mn/MnRequestSchema')
 const UserModel = require('../../../models/UserSchema')
 const MnProgramModel = require('../../../models/mn/MnProgramSchema')
 const MnMentorModel = require('../../../models/mn/MnMentorSchema')
-const populate =require('../../../others/populations')
+const populate = require('../../../others/populations')
 
 
 
@@ -12,12 +12,24 @@ module.exports.Get = function (req, res) {
     var type = req.params.type;
     var user = req.user;
     let query;
-    if(type === 'user'){
-        query={ ReqUser:user._id}
+    if (type === 'user') {
+        query = { ReqUser: user._id }
     }
-    else if(type === 'mentor'){
-        query={ ReqMentor:user._id};
+    else if (type === 'mentor') {
+        //query={ ReqMentor:user._id};
+        //get mentor 
+        MnMentorModel.findById(user._id, function (err, result) {
+            if (!err && result) {
+                query = { ReqProg: { $in: result.MentorPrograms } };
+            }
+            else {
+
+            }
+        })
+
+
     }
+
 
     MnRequestModel.find(query, function (err2, result2) {
 
@@ -33,39 +45,39 @@ module.exports.Get = function (req, res) {
 
 
 
-        //get requests for mentor 
+    //get requests for mentor 
 
-        // var mentor = req.user;
-        // MnRequestModel.find({ ReqMentor:mentor._id}, function (err2, result2) {
-        //     if (!err2 && result2 ) {
-        //         return res.json({
-        //             success: true,
-        //             payload: result2,
-        //             message: 'Requests Successfully loaded'
-        //         })
-        //     }
-        // }).populate(populate.RequestPopulation)
+    // var mentor = req.user;
+    // MnRequestModel.find({ ReqMentor:mentor._id}, function (err2, result2) {
+    //     if (!err2 && result2 ) {
+    //         return res.json({
+    //             success: true,
+    //             payload: result2,
+    //             message: 'Requests Successfully loaded'
+    //         })
+    //     }
+    // }).populate(populate.RequestPopulation)
 
-        // MnMentorModel.findById(mentor._id, function (err, result) {
+    // MnMentorModel.findById(mentor._id, function (err, result) {
 
-        //     if (!err && result) {
-        //         MnRequestModel.find({ ReqProg: { $in: result.MentorPrograms }}, function (err2, result2) {
-        //             console.log(err2,result)
-        //             if (!err2 && result2 ) {
-        //                 return res.json({
-        //                     success: true,
-        //                     payload: result2,
-        //                     message: 'Requests Successfully loaded'
-        //                 })
-        //             }
-        //             else{
-        //                 console.log(err2)
-        //             }
+    //     if (!err && result) {
+    //         MnRequestModel.find({ ReqProg: { $in: result.MentorPrograms }}, function (err2, result2) {
+    //             console.log(err2,result)
+    //             if (!err2 && result2 ) {
+    //                 return res.json({
+    //                     success: true,
+    //                     payload: result2,
+    //                     message: 'Requests Successfully loaded'
+    //                 })
+    //             }
+    //             else{
+    //                 console.log(err2)
+    //             }
 
-        //         }).populate(populate.RequestPopulation)
-        //     }
+    //         }).populate(populate.RequestPopulation)
+    //     }
 
-        // })
+    // })
 
 }
 
@@ -102,43 +114,56 @@ module.exports.Save = function (req, res) {
 
     })
 
-
-
-    var saveRequest = MnRequestModel();
-    saveRequest.ReqType = req.body.requestTypeI;
-    saveRequest.ReqProg = req.body.requestProgramIdI;
-    saveRequest.ReqSource = 'website';
-    saveRequest.ReqDates = req.body.requestDatesI
-    saveRequest.ReqUser = userId;
-    saveRequest.save(function (err, result) {
-
-        if (!err && result) {
-
-            //push request to user mn requests       
-            UserModel.findOne({ _id: userId }, function (err2, result2) {
-                console.log(err2)
-
-                if (result2 && !err2) {
-                    result2['MNRequests'].push(result._id)
-                    result2.save();
-                }
-            })
-
-            return res.json({
-                success: true,
-                payload: null,
-                message: 'Request Successfully saved'
-            })
-        }
-        else {
+    //check use has no active requests in program
+    MnRequestModel.find({ ReqUser: userId, ReqProg: req.body.requestProgramIdI }, function (err, result) {
+        if (!err && result.length > 0) {
             return res.json({
                 success: false,
                 payload: null,
-                message: 'Unable to save Request '
+                message: 'Unable To Save Request ,Already Has Request '
             })
         }
-
+        else{
+            var saveRequest = MnRequestModel();
+            saveRequest.ReqType = req.body.requestTypeI;
+            saveRequest.ReqProg = req.body.requestProgramIdI;
+            saveRequest.ReqSource = 'website';
+            saveRequest.ReqDates = req.body.requestDatesI
+            saveRequest.ReqUser = userId;
+            saveRequest.save(function (err, result) {
+        
+                if (!err && result) {
+        
+                    //push request to user mn requests       
+                    UserModel.findOne({ _id: userId }, function (err2, result2) {
+                        console.log(err2)
+        
+                        if (result2 && !err2) {
+                            result2['MNRequests'].push(result._id)
+                            result2.save();
+                        }
+                    })
+        
+                    return res.json({
+                        success: true,
+                        payload: null,
+                        message: 'Request Successfully saved'
+                    })
+                }
+                else {
+                    return res.json({
+                        success: false,
+                        payload: null,
+                        message: 'Unable to save Request '
+                    })
+                }
+        
+            })
+        }
     })
+
+
+
 
 }
 
@@ -154,7 +179,7 @@ module.exports.Pay = function (req, res) {
                 message: 'Request Successfully Paid'
             })
         }
-        else{
+        else {
             return res.json({
                 success: false,
                 payload: null,

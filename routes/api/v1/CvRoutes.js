@@ -2,9 +2,9 @@ const express = require('express');
 const multer = require('multer');
 
 
-const CvController = require('../../../../controllers/api/cv/CvController');
-const Validate = require('../../../../others/validation');
-const auth = require('../../../../others/auth');
+const CvController = require('../../../controllers/api/CvController');
+const Validate = require('../../../others/validation');
+const auth = require('../../../others/auth');
 
 const upload = multer({limits:{fieldSize:1024}});
 const router = express.Router();
@@ -25,5 +25,9 @@ router.put('/:cvId/changeSort',auth.validateToken,CvController.ChangeSort)
 router.put('/:cvId/addSection',auth.validateToken,CvController.AddSection)
 
 router.put('/:cvId/removeSection',auth.validateToken,CvController.RemoveSection)
+
+router.put('/:cvId/setTemplate',auth.validateToken,CvController.SetTemplate)
+
+router.get('/:cvId/render',CvController.Render)
 
 module.exports = router;

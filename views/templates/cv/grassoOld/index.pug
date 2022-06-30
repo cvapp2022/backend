@@ -1,0 +1,52 @@
+extends ../base
+
+block style 
+    link(rel="stylesheet", href="http://127.0.0.1:5000/templates/grasso.css")
+block content 
+    .p-5.m-5 
+        .row.justify-content-between.pb-4.mb-4.b-border
+            div 
+                h4.full-name Karen Richards
+                h4 Full stack web developer
+            div
+                p.mb-1 +963 949 991 984
+                p.mb-1 ahmad.alaswad.dev@gmail.com
+                p.mb-1 Syria Aleppo Al-shanqiti street
+                p.mb-1 Linkedin.com/ahmad.alaswad
+        .row 
+            .col-4
+                .skills-section.my-4.pb-4.b-border
+                    p.mb-4.section-title Skills
+                    p html
+                    p css
+                    p javascript
+                    p nodejs
+                    p Expressjs
+                    p PHP
+                    p Laravel
+                    p Vuejs
+                    p Vuex
+                    p Nextjs
+                    p redux
+                    p dart
+                    p flutter
+                    p bloc with cubit
+                .awards-section.my-4.pb-4.b-border
+                    h4.mb-4.section-title Awards
+                    include ./aw
+                    include ./aw
+            .col-8.px-0.l-border
+                .profile-section.my-4.px-4
+                    h4.mb-4.section-title Profile
+                    p.b-border.pb-4  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum nisi est asperiores magnam? Voluptatum, quisquam reiciendis in doloribus velit obcaecati! Ab sed officiis, rerum quo provident amet necessitatibus ipsum deleniti! Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates repudiandae recusandae sint ad asperiores corporis tenetur, perferendis similique at maxime in molestias consequuntur, esse eius voluptatibus voluptatem aliquid consectetur aut.
+                .experience-section.my-4.pb-4
+                    h4.mb-4.section-title.px-4 Work Experience
+                    include ./exp
+                    include ./exp
+                .b-border.mx-4
+                .education-section.my-4.pb-4
+                    h4.mb-4.section-title.px-4  Education
+                    include ./edu
+                    include ./edu
+
+

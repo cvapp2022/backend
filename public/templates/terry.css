@@ -1,0 +1,17 @@
+.b-border{
+    border-bottom:1px black solid
+}
+.b-section{
+    width: 50px;
+    height: 1px;
+    background-color: black;
+}
+.b-section-h{
+    width: 50px;
+    height: 2px;
+    background-color: black;
+}
+
+.text-end{
+    text-align: end;
+}

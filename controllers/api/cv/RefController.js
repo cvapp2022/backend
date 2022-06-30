@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const RefModel=require('../../../models/cv/ReffernceSchema');
-const CvModel=require('../../../models/cv/CvSchema');
+const CvModel=require('../../../models/CvSchema');
 var ObjectId = require('mongoose').Types.ObjectId;
 const facade = require('../../../others/facades');
 

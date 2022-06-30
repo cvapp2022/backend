@@ -1,0 +1,15 @@
+p{
+    margin: 0;
+}
+body{
+    color: #8b8b8b;
+}
+.profile-section , .contacts-section {
+    color: white;
+}
+.b-border{
+    border-bottom:1px #8b8b8b solid
+}
+.l-border{
+    border-left:1px #8b8b8b solid ;
+}

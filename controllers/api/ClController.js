@@ -46,9 +46,10 @@ exports.Save = function (req, res) {
 
     var SaveCl = new ClModel();
     SaveCl.CLName = req.body.ClNameI;
+    SaveCl.CLTemplate='62b74a1d6ae2a8130d5a44b8'
     SaveCl.CLUId = req.user._id;
     SaveCl.save(function (err, result) {
-
+        console.log(err,result)
         if (result && !err) {
 
             //push cv id to user
@@ -187,3 +188,39 @@ exports.Delete = function (req, res) {
 
 }
 
+exports.SetTemplate=function(req,res){
+
+    
+    //validate param 
+    var ClId = new ObjectId(req.params.clId);
+    if (!ObjectId.isValid(req.params.clId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid xxx'
+        });
+    }
+    
+    //validate input
+    var newTemplate=req.body.TemplateIdI;
+    if (!ObjectId.isValid(newTemplate)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Template is required'
+        });
+    }
+
+    ClModel.findOneAndUpdate({ _id:ClId},{CLTemplate:newTemplate},function(err,result){
+
+        if(!err && result){
+            return res.json({
+                success: true,
+                payload: result,
+                msg: 'cl Template Successfully updated'
+            });
+        }
+    })
+
+
+}

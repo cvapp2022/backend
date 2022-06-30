@@ -342,3 +342,42 @@ exports.MnMeetValidate = [
 ]
 
 //end mentorship meet save validation
+
+
+
+//start Blog Category Save Validation
+exports.BlogCategoryValidate = [
+
+        check('CategoryTitleI').notEmpty()
+                .withMessage('Category Title Is required'),
+        check('CategoryDescI').notEmpty()
+                .withMessage('Category Descreption Is required')
+]
+//end Blog Category Save Validation
+
+//start Blog Post Save Validation
+exports.BlogPostValidate = [
+
+        check('postTitleI').notEmpty()
+                .withMessage('Post Title Is required'),
+        check('postCategoryI').notEmpty()
+                .withMessage('Post Category  Is required')
+]
+//end Blog Post Save Validation
+
+
+//start Blog Post Child Save Validation
+
+exports.BlogPostChild = [
+        check('postTitleI').notEmpty()
+                .withMessage('Post Title Is required'),
+        check('postDescI').notEmpty()
+                .withMessage('Post Descreption  Is required'),
+        check('postThumbI').notEmpty()
+                .withMessage('Post Thumbnail  Is required'),
+        check('postBodyI').notEmpty()
+                .withMessage('Post Body Is required'),
+                
+        
+]
+//end Blog Post Child Save Validation

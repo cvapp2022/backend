@@ -1,6 +1,6 @@
 const ConatctModel = require('../models/cv/ContactSchema');
 const CVMetaModel = require('../models/cv/CvMetaSchema');
-const CvModel = require('../models/cv/CvSchema');
+const CvModel = require('../models/CvSchema');
 const SkillModel = require('../models/cv/SkillSchema');
 const UserModel = require('../models/UserSchema');
 

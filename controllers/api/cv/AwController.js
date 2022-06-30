@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const CvModel = require('../../../models/cv/CvSchema');
+const CvModel = require('../../../models/CvSchema');
 const AwModel = require('../../../models/cv/AwSchema');
 
 const facade = require('../../../others/facades');

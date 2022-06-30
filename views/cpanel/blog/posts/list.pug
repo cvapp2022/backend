@@ -1,0 +1,33 @@
+extends ../../layout
+
+block style
+    link(rel="stylesheet", href="http://127.0.0.1:5000/datatables/css/dataTables.bootstrap4.min.css")
+
+block content
+    h4 Posts List
+    .row 
+        .col-sm-12 
+            table( id="example" class="table table-bordered" style="width:100%")
+                thead
+                    tr
+                        th  Post Title
+                        th Category
+                        th  en
+                        th  ar
+                tbody
+                    for post in posts
+                        tr
+                            td=post.PostTitle
+                            td
+                                a(href="")=post.PostCategory.CategoryTitle
+                            td
+                                a(href="/cpanel/Blog/Post/"+post._id+'/en/new') +
+                            td
+                                a(href="/cpanel/Blog/Post/"+post._id+'/ar/new')  +
+block script
+    script.
+        $(document).ready(function () {
+            $('#example').DataTable();
+        }); 
+    script(src="http://127.0.0.1:5000/datatables/js/dataTables.bootstrap4.min.js") 
+    script(src="http://127.0.0.1:5000/datatables/js/jquery.dataTables.min.js") 

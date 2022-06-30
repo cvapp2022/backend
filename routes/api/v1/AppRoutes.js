@@ -2,7 +2,7 @@ const express = require('express');
 const queryString =require('query-string')
 const router = express.Router();
 
-
+const TemplateModel= require('../../../models/TemplateSchema')
 
 //authenticate using facebook
 router.get('/init',function(req,res){
@@ -37,24 +37,43 @@ router.get('/init',function(req,res){
 
     });
     
-    //prepare facebook login link
-
-
-
-    
+    //prepare facebook login link    
     const googleLoginUrl = `https://accounts.google.com/o/oauth2/v2/auth?${googlestringifiedParams}`;
     const githubLoginUrl = `https://github.com/login/oauth/authorize?${githubstringifiedParams}`;
     const linkedinLoginUrl= `https://www.linkedin.com/oauth/v2/authorization?${linkedinstringifiedParams}`;
+    
     var data = {
       'google':googleLoginUrl,
       'github':githubLoginUrl,
       'linkedin':linkedinLoginUrl
     }
-    return res.json({
-      success:true,
-      payload:{LoginLinks:data,configs:{}},
-      message:'App init Successfuly loaded'
-  })
+    var cvTemplates =[];
+    var clTemplates=[];
+    //get cv & cl templates 
+    TemplateModel.find({TemplateStatus:1}).exec(function(err,result){
+
+      if(!err && result){
+        result.forEach((item)=>{  
+          if(item.TemplateFor === 'cv') cvTemplates.push(item)
+          else if(item.TemplateFor === 'cl') clTemplates.push(item)
+        })
+
+        return res.json({
+          success:true,
+          payload:
+          {
+            socialLogin:data,
+            cvTemplates,
+            clTemplates,
+            configs:{}
+          },
+          message:'App init Successfuly loaded'
+      })
+
+      }
+    })
+
+
     
 
 

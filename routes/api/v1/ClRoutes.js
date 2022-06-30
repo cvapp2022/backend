@@ -15,6 +15,7 @@ router.put('/:clId',auth.validateToken,Validate.ClValidate,ClController.Update)
 
 router.delete('/:clId',auth.validateToken,Validate.ClValidate,ClController.Delete)
 
+router.put('/:clId/setTemplate',auth.validateToken,ClController.SetTemplate)
 
 
 module.exports = router;

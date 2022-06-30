@@ -4,20 +4,20 @@ const { google } = require('googleapis');
 const stream = require('stream');
 
 
-const CvModel = require('../../../models/cv/CvSchema');
-const CvMetaModel = require('../../../models/cv/CvMetaSchema')
-const UserModel = require('../../../models/UserSchema');
-const ExpModel = require('../../../models/cv/ExperienceSchema');
-const EduModel = require('../../../models/cv/EducationSchema');
-const ContactModel = require('../../../models/cv/ContactSchema')
-const OrgModel = require('../../../models/cv/OrganizationSchema');
-const ProjModel = require('../../../models/cv/ProjectSchema');
-const ReffModel = require('../../../models/cv/ReffernceSchema');
-const SkillModel = require('../../../models/cv/SkillSchema')
-const AwModel = require('../../../models/cv/AwSchema');
+const CvModel = require('../../models/CvSchema');
+const CvMetaModel = require('../../models/cv/CvMetaSchema')
+const UserModel = require('../../models/UserSchema');
+const ExpModel = require('../../models/cv/ExperienceSchema');
+const EduModel = require('../../models/cv/EducationSchema');
+const ContactModel = require('../../models/cv/ContactSchema')
+const OrgModel = require('../../models/cv/OrganizationSchema');
+const ProjModel = require('../../models/cv/ProjectSchema');
+const ReffModel = require('../../models/cv/ReffernceSchema');
+const SkillModel = require('../../models/cv/SkillSchema')
+const AwModel = require('../../models/cv/AwSchema');
 
-const facades = require('../../../others/facades');
-const population = require('../../../others/populations')
+const facades = require('../../others/facades');
+const population = require('../../others/populations')
 
 
 
@@ -78,7 +78,7 @@ exports.Save = function (req, res, next) {
     var SaveCv = new CvModel();
     SaveCv.CVName = req.body.CvNameI;
     SaveCv.CVUId = req.user._id;
-    SaveCv.CVTemplate = '62a206e32cd4261dbf6fea32';
+    SaveCv.CVTemplate = '62b6f0b0b422b9bda6ee1b21';
     SaveCv.save(function (err, result) {
         console.log(err)
         if (result && !err) {
@@ -457,7 +457,9 @@ exports.AddSection = function (req, res) {
         if (!err && result) {
 
             //check section is unique
-            var oldSections = result.CvSections
+            var oldMainSections = result.CvSections.main
+            var oldSideSections = result.CvSections.side
+            var oldSections=[oldMainSections,oldSideSections].flat();
             oldSections.find((item) => {
                 if (item.name === req.body.SectionNameI) {
                     return res.json({
@@ -469,12 +471,12 @@ exports.AddSection = function (req, res) {
                 else {
                     var newSection = { name: req.body.SectionNameI }
                     var combineSections = [
-                        oldSections,
+                        oldMainSections,
                         newSection
                     ]
-                    var newSections = combineSections.flat();
+                    var newMainSections = combineSections.flat();
 
-                    result.CvSections = newSections
+                    result.CvSections = {'main':newMainSections,'side':oldSideSections};
                     result.save(function (err2, result2) {
 
                         if (!err2 && result2) {
@@ -563,3 +565,61 @@ exports.RemoveSection = function (req, res) {
 
 
 }
+
+
+exports.SetTemplate=function(req,res){
+
+    
+    //validate param 
+    var CvId = new ObjectId(req.params.cvId);
+    if (!ObjectId.isValid(req.params.cvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+    
+    //validate input
+    var newTemplate=req.body.TemplateIdI;
+    if (!newTemplate || !ObjectId.isValid(newTemplate)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Template is required'
+        });
+    }
+
+    CvModel.findOneAndUpdate({ _id:CvId},{CVTemplate:newTemplate},function(err,result){
+
+        if(!err && result){
+            return res.json({
+                success: true,
+                payload: result,
+                msg: 'Cv Template Successfully updated'
+            });
+        }
+    }).populate(population.CvPopulate)
+}
+
+
+
+exports.Render=function(req,res){
+
+    //validate param 
+    var CvId = new ObjectId(req.params.cvId);
+    if (!ObjectId.isValid(CvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+
+    CvModel.findOne({_id:CvId},function(err,result){
+        return res.render('templates/cv/'+result.CVTemplate.TemplateName,{cv:result})
+    }).populate(population.CvPopulate)
+
+
+}
+

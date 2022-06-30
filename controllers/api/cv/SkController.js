@@ -3,7 +3,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 
 const SkillModel = require('../../../models/cv/SkillSchema')
-const CVModel = require("../../../models/cv/CvSchema");
+const CVModel = require("../../../models/CvSchema");
 const ExpModel = require('../../../models/cv/ExperienceSchema');
 const EduModel=require('../../../models/cv/EducationSchema');
 

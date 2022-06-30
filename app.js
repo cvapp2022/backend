@@ -29,7 +29,7 @@ const AppRoutes = require('./routes/api/v1/AppRoutes')
 
 const ClRoutes = require('./routes/api/v1/ClRoutes')
 
-const CvRoutes = require('./routes/api/v1/cv/CvRoutes')
+const CvRoutes = require('./routes/api/v1/CvRoutes')
 const ExpRoutes = require('./routes/api/v1/cv/ExpRoutes')
 const EduRoutes= require('./routes/api/v1/cv/EduRoutes')
 const SkillRoutes = require('./routes/api/v1/cv/SkRoutes')
@@ -56,6 +56,8 @@ const CUsersRoutes = require('./routes/cpanel/CUsersRoutes')
 const CMnProgramsRoutes =require('./routes/cpanel/CpMnRoutes/MnProgramRoutes')
 const CMnMentorRoutes = require('./routes/cpanel/CpMnRoutes/MnMentorRoutes')
 const CTemplateRoutes = require('./routes/cpanel/CTemplateRoutes')
+const CBlogCategoryRoutes= require('./routes/cpanel/CpBlogRoutes/BlogCategoryRoutes')
+const CBlogPostRoutes = require('./routes/cpanel/CpBlogRoutes/BlogPostRoutes')
 
 //sockets 
 const MessageSocket=require('./sockets/mn/MessageSocket')
@@ -182,9 +184,11 @@ app.use('/api/v1/Validation',ValidationRoutes)
 
 app.use('/Cpanel',CpanelRoutes)
 app.use('/Cpanel/Users',CUsersRoutes)
-app.use('/Cpanel/Mentorship/Programs/',CMnProgramsRoutes)
+app.use('/Cpanel/Mentorship/Programs',CMnProgramsRoutes)
 app.use('/Cpanel/Mentorship/Mentors',CMnMentorRoutes)
 app.use('/Cpanel/Templates',CTemplateRoutes)
+app.use('/Cpanel/Blog/Cat',CBlogCategoryRoutes)
+app.use('/Cpanel/Blog/Post',CBlogPostRoutes)
 
 
 //Server

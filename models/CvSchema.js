@@ -19,17 +19,18 @@ const CvModel = new Schema({
     CVAw: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BLCVAw' }],
     CvMeta: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BLCVMeta' }],
     CvSections: {
-        type: Object, default: [
-            {
-                name: 'experiences',
-            },
-            {
-                name: 'educations',
-            },
-            {
-                name: 'projects',
-            },
-        ]
+        type: Object, default: {
+            main: [
+                { name:"profile" },
+                { name: "experiences" },
+                { name: "educations" },
+                { name: "reffrences" },
+            ],
+            side: [
+                { name: "contacts" },
+                { name: "skills" }
+            ],
+        },
     }
 }, {
     toJSON: {

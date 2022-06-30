@@ -1,4 +1,4 @@
-const TemplateModel = require('../../models/cv/TemplateSchema')
+const TemplateModel = require('../../models/TemplateSchema')
 
 
 

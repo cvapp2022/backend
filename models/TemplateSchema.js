@@ -9,6 +9,7 @@ const CvTemplate = new Schema({
   TemplateThumb:{type:String,required:true},
   TemplateDesc:{type:String,required:true}, 
   TemplateStatus:{type:Number,default:1},
+  TemplateFor:{type:String,default:'cv'}, // cv ,cl
   TemplatePrice:{type:Number,required:true,default:0},
   isPaid:{type:Boolean,default:false},
 });

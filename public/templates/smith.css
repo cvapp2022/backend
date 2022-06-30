@@ -1,0 +1,13 @@
+p{
+    margin: 0;
+    font-size: 12px;
+}
+.profile-section h4, .experience-section h4 , .details-section h4 ,.skills-section h4, .languages-section h4 , .education-section h4 {
+    color: #18beff;
+}
+.l-border{
+    border-left:1px black solid ;
+}
+.data{
+    color: gray;
+}

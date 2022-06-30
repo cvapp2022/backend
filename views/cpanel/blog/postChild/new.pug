@@ -1,0 +1,15 @@
+extends ../../layout
+
+    //- PostTitle: { type: String, required: true },
+    //- PostDesc: { type: String, required: true },
+    //- PostThumb:{ type: String, required: true },
+    //- PostLang: { type: Number, required: true, default: 'en' },
+    //- PostBody:{ type: String, required: true },
+
+block content
+    h4 Save Post Child
+    form.form-horizontal( method="post") 
+        .form-group 
+            input.form-control(type="text" name="postTitleI" placeholder='Post title' required )
+        .form-group 
+            input(type='submit').btn.btn-primary
