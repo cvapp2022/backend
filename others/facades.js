@@ -3,10 +3,11 @@ const CVMetaModel = require('../models/cv/CvMetaSchema');
 const CvModel = require('../models/CvSchema');
 const SkillModel = require('../models/cv/SkillSchema');
 const UserModel = require('../models/UserSchema');
+const MnMeetModel = require('../models/mn/MnMeetSchema')
 
 const population=require('./populations')
-
 const { google } = require('googleapis');
+const stream = require('stream');
 
 
 exports.saveCvMeta = function (arr, CvId) {
@@ -170,10 +171,6 @@ exports.GetUser = function (UserId, pop, callback) {
 }
 
 
-
-
-
-
 exports.googleAuth = function () {
 
 
@@ -183,7 +180,7 @@ exports.googleAuth = function () {
     //client secret
     const CLIENT_SECRET = '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';
 
-    const REFRESH_TOKEN = '1//04eOJ9Bs5FdxBCgYIARAAGAQSNwF-L9Irrto42PznfcCLrt-ng3e6UNdvJQBSRlHQI3IF05wbn2Ex2oGs4VIzNGrxJaqjfLezYp0';
+    const REFRESH_TOKEN = '1//04HlUviOjiDn3CgYIARAAGAQSNwF-L9IrGZN-bXUGMPiNikWRMZwb8Veb3HPvRVHij9S2bL17co5ymo9uB6hRN8MDchsd_ra7mrQ';
 
     const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
@@ -199,4 +196,117 @@ exports.googleAuth = function () {
     return oauth2Client;
 
 
+}
+
+
+exports.uploadFileTo=async function(file,to,folderId,callback){
+
+    
+    let nfolder;
+    let dfile;
+    if(to === 'template'){
+        nfolder=process.env.TEMPLATE_FOLDER;
+        dfile=process.env.TEMPLATE_THUMBNAIL_DEFAULT;
+    }
+    else if(to === 'program'){
+        nfolder=folderId;
+        dfile=process.env.PROGRAM_THUMBNAIL_DEFAULT;
+    }
+    else if(to ==='post'){
+        nfolder=folderId;
+        dfile=process.env.POST_THUMBNAIL_DEFAULT
+    }
+    else if(to==='mentor'){
+        nfolder=folderId;
+        dfile=process.env.MENTOR_THUMBNAIL_DEFAULT
+    }
+    else if(to ==='session'){
+        nfolder=folderId;
+        dfile='';
+    }
+
+    var oauth2Client =exports.googleAuth();
+    const drive = google.drive({
+        version: 'v3',
+        auth: oauth2Client,
+    });
+
+
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(file.buffer);
+
+    try {
+
+        drive.files.create({
+            fields: 'id',
+            resource:{
+                'name':file.name,
+                'parents':[nfolder],
+            },
+            media: {
+                mimeType: file.mimetype,
+                body: bufferStream,
+            },
+        }).then((resp)=>{
+
+            //set permisions
+            drive.permissions.create({
+                requestBody: {
+                    role: 'reader',
+                    type: 'anyone'
+                },
+                fileId: resp.data.id
+            }).then((resp2) => {
+                callback(resp.data.id)
+            }).catch((err2)=>{
+                callback(dfile)
+                console.log('setting permision',err2)
+            });
+        })
+        .catch((err)=>{
+            callback(dfile)
+            console.log('error from saving file',err)
+            callback(dfile)
+        });
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.createFolder=function(name,to,callback){
+
+    let pfolder;
+    if(to === 'posts'){
+        pfolder=process.env.POST_FOLDER;
+    }
+    else if(to === 'programs'){
+        pfolder=process.env.PROGRAM_FOLDER;
+    }
+    else if(to ==='mentors'){
+        pfolder=process.env.MENTOR_FOLDER;
+    }
+    else if(to ==='session'){
+        pfolder=process.env.SESSION_FOLDER;
+    }
+    var oauth2Client =exports.googleAuth();
+    const drive = google.drive({
+        version: 'v3',
+        auth: oauth2Client,
+    });
+
+    try {
+        drive.files.create({
+            fields: 'id',
+            resource:{
+                'name':name,
+                'parents':[pfolder],
+                'mimeType': 'application/vnd.google-apps.folder',
+            }
+        }).then((resp)=>{
+            callback(resp.data.id)
+        })
+    } catch (error) {
+        throw   error;
+    }
 }

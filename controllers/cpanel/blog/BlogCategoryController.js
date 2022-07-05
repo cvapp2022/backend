@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const BlogCategoryModel = require('../../../models/blog/CategorySchema')
+const CategoryModel = require('../../../models/blog/CategorySchema')
 
 exports.SaveGet=function(req,res){
     res.render('cpanel/blog/categories/new')
@@ -14,7 +14,7 @@ exports.SavePost=function(req,res){
     }
 
     //save Category
-    var saveCat=new BlogCategoryModel();
+    var saveCat=new CategoryModel();
     saveCat.CategoryTitle=req.body.CategoryTitleI;
     saveCat.CategoryDesc=req.body.CategoryDescI;
     saveCat.CategoryThumb='test';

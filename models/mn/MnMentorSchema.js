@@ -12,7 +12,8 @@ const MnMentorModel = new Schema({
     MentorPhone: { type: String, required: true },
     MentorPass: { type: String, required: true },
     MentorStatus: { type: Number, default: 1 },
-    MentorImg: { type: String, required: true },
+    MentorImg: { type: String,default:process.env.MENTOR_THUMBNAIL_DEFAULT },
+    MentorFolder:{ type: String, required: true },
     MentorPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnProgram' }],
     MentorRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnRequest' }],
 })

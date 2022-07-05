@@ -221,5 +221,8 @@ exports.CvPopulate = [
 exports.PostPopulate =[
     {
         path:'PostCategory'
+    },
+    {
+        path:'PostChild',
     }
 ]

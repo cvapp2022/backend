@@ -1,0 +1,12 @@
+extends ../layout
+
+
+block content
+    h4  template list
+    for template in templates
+        .card.my-2
+            .card-body 
+                .d-flex.justify-content-between 
+                    h4=template.TemplateName
+                    .d-flex 
+                        a.btn.btn-danger(href="/cpanel/Templates/delete/"+template._id) Delete

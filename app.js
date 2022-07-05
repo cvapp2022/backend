@@ -26,9 +26,12 @@ const signalServer = require('simple-signal-server')(io)
 
 //Require routes 
 const AppRoutes = require('./routes/api/v1/AppRoutes')
+const ValidationRoutes = require('./routes/api/v1/ValidationRoutes')
 
+//cl
 const ClRoutes = require('./routes/api/v1/ClRoutes')
 
+//cv
 const CvRoutes = require('./routes/api/v1/CvRoutes')
 const ExpRoutes = require('./routes/api/v1/cv/ExpRoutes')
 const EduRoutes= require('./routes/api/v1/cv/EduRoutes')
@@ -47,7 +50,8 @@ const MnPorgramRoutes=require('./routes/api/v1/mn/ProgramRoutes')
 const MnMeetRoutes=require('./routes/api/v1/mn/MeetRoutes')
 const MnSessionRoutes=require('./routes/api/v1/mn/meet/SessionRoutes')
 
-const ValidationRoutes = require('./routes/api/v1/ValidationRoutes')
+//blog
+const BlogPostRoutes=require('./routes/api/v1/blog/PostRoutes')
 
 
 //cpanel routes 
@@ -160,23 +164,27 @@ app.get('/', function (req, res) {
   res.send('Lobby server<br/>rooms: ' + rooms.size + '<br/>members: ' + sum);
 });
 app.use('/api/v1/',AppRoutes)
-app.use('/api/v1/Cv',CvRoutes)
-app.use('/api/v1/Cl',ClRoutes)
-app.use('/api/v1/Exp',ExpRoutes)
-app.use('/api/v1/Edu',EduRoutes)
-app.use('/api/v1/Skill',SkillRoutes)
-app.use('/api/v1/Reff',ReffRoutes)
-app.use('/api/v1/Proj',ProjRoutes)
-app.use('/api/v1/Org',OrgRoutes)
-app.use('/api/v1/Aw',AwRoutes)
 app.use('/api/v1/User/',UserRoutes)
-app.use('/api/v1/Contact/',ContactRoutes)
+
+app.use('/api/v1/Cl',ClRoutes)
+
+app.use('/api/v1/Cv',CvRoutes)
+app.use('/api/v1/Cv/Exp',ExpRoutes)
+app.use('/api/v1/Cv/Edu',EduRoutes)
+app.use('/api/v1/Cv/Skill',SkillRoutes)
+app.use('/api/v1/Cv/Reff',ReffRoutes)
+app.use('/api/v1/Cv/Proj',ProjRoutes)
+app.use('/api/v1/Cv/Org',OrgRoutes)
+app.use('/api/v1/Cv/Aw',AwRoutes)
+app.use('/api/v1/Cv/Contact/',ContactRoutes)
+
 app.use('/api/v1/Mn/Request',MnRequestRoutes)
 app.use('/api/v1/Mn/Mentor',MnMentorRoutes)
 app.use('/api/v1/Mn/Program',MnPorgramRoutes)
 app.use('/api/v1/Mn/Meet',MnMeetRoutes)
 app.use('/api/v1/Mn/Session',MnSessionRoutes)
 
+app.use('/api/v1/blog/Post',BlogPostRoutes)
 
 
 app.use('/api/v1/Validation',ValidationRoutes)

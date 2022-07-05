@@ -3,7 +3,7 @@ extends ../layout
 
 block content
     h4 new template form
-    form.form-horizontal( method="post") 
+    form.form-horizontal( method="post" enctype="multipart/form-data" ) 
         .form-group 
             input.form-control(type="text" name="templateNameI" placeholder='template name' required )
         .form-group 

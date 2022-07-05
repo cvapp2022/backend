@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const MnProgramModel = require('../../../models/mn/MnProgramSchema')
 const MnMentorModel = require('../../../models/mn/MnMentorSchema')
 
+const facades = require('../../../others/facades')
 
 module.exports.SaveGet = function (req, res) {
     return res.render('cpanel/mentorship/programs/new')
@@ -15,29 +16,38 @@ module.exports.SavePost = function (req, res) {
     if (errors.errors.length > 0) {
         return res.status(400).json({
             success: false,
-            payload: errors.errors,
-            msg: 'Validation Error'
+            payload: {err:errors.errors,body:req.body},
+            msg: 'Validation x Error'
         });
     }
 
     //updload program image
+    facades.createFolder(req.body.progNameI,'programs',function(folderId){
 
-    //save program
-    var saveProgram = new MnProgramModel();
-    saveProgram.ProgName = req.body.progNameI;
-    saveProgram.ProgDesc = req.body.progDescI;
-    saveProgram.ProgImg = 'test';
-    saveProgram.ProgMeetsNum = req.body.progMeetsNumI;
-    saveProgram.save(function (err, result) {
+        facades.uploadFileTo(req.files.progImgI[0],'program',folderId,function(fildId){
+            //save program
+            var saveProgram = new MnProgramModel();
+            saveProgram.ProgName = req.body.progNameI;
+            saveProgram.ProgDesc = req.body.progDescI;
+            saveProgram.ProgImg = fildId;
+            saveProgram.ProgFolder=folderId;
+            saveProgram.ProgMeetsNum = req.body.progMeetsNumI;
+            saveProgram.save(function (err, result) {
+        
+                if (result && !err) {
+                    return res.send('Program saved');
+                }
+                else {
+                    return res.send('Somtign');
+                }
+        
+            });
+        })
 
-        if (result && !err) {
-            return res.send('Program saved');
-        }
-        else {
-            return res.send('Somtign');
-        }
+    })
 
-    });
+
+
 
 }
 

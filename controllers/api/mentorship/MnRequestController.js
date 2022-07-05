@@ -3,8 +3,9 @@ const MnRequestModel = require('../../../models/mn/MnRequestSchema')
 const UserModel = require('../../../models/UserSchema')
 const MnProgramModel = require('../../../models/mn/MnProgramSchema')
 const MnMentorModel = require('../../../models/mn/MnMentorSchema')
+const MnMeetModel = require('../../../models/mn/MnMeetSchema')
 const populate = require('../../../others/populations')
-
+const facades = require('../../../others/facades')
 
 
 module.exports.Get = function (req, res) {
@@ -102,65 +103,68 @@ module.exports.Save = function (req, res) {
     }
 
     //check program request 
-    MnProgramModel.find({ _id: req.body.requestProgramIdI, ProgStatus: 1 }, function (err, result) {
+    MnProgramModel.findOne({ _id: req.body.requestProgramIdI, ProgStatus: 1 }, function (err, result) {
 
-        if (err || !result) {
+        if (!err && result) {
+            //check user has no active requests in program
+            MnRequestModel.find({ ReqUser: userId, ReqProg: req.body.requestProgramIdI }, function (err2, result2) {
+                if (!err2 && result2.length > 0) {
+                    return res.json({
+                        success: false,
+                        payload: null,
+                        message: 'Unable To Save Request ,Already Has Request '
+                    })
+                }
+                else {
+                    var saveRequest = MnRequestModel();
+                    saveRequest.ReqType = req.body.requestTypeI;
+                    saveRequest.ReqProg = req.body.requestProgramIdI;
+                    saveRequest.ReqSource = 'website';
+                    saveRequest.ReqDates = req.body.requestDatesI
+                    saveRequest.ReqUser = userId;
+                    saveRequest.save(function (err3, result3) {
+
+                        if (!err3 && result3) {
+
+                            //push request to user mn requests       
+                            UserModel.findOne({ _id: userId }, function (err4, result4) {
+                                console.log(err4)
+
+                                if (result4 && !err4) {
+                                    result4['MNRequests'].push(result3._id)
+                                    result4.save();
+                                }
+                            })
+
+                            return res.json({
+                                success: true,
+                                payload: null,
+                                message: 'Request Successfully saved'
+                            })
+                        }
+                        else {
+                            return res.json({
+                                success: false,
+                                payload: null,
+                                message: 'Unable to save Request '
+                            })
+                        }
+
+                    })
+                }
+            })
+
+        } else {
             return res.json({
                 success: false,
                 payload: null,
                 message: 'Unable to find program'
             })
+
         }
 
     })
 
-    //check use has no active requests in program
-    MnRequestModel.find({ ReqUser: userId, ReqProg: req.body.requestProgramIdI }, function (err, result) {
-        if (!err && result.length > 0) {
-            return res.json({
-                success: false,
-                payload: null,
-                message: 'Unable To Save Request ,Already Has Request '
-            })
-        }
-        else{
-            var saveRequest = MnRequestModel();
-            saveRequest.ReqType = req.body.requestTypeI;
-            saveRequest.ReqProg = req.body.requestProgramIdI;
-            saveRequest.ReqSource = 'website';
-            saveRequest.ReqDates = req.body.requestDatesI
-            saveRequest.ReqUser = userId;
-            saveRequest.save(function (err, result) {
-        
-                if (!err && result) {
-        
-                    //push request to user mn requests       
-                    UserModel.findOne({ _id: userId }, function (err2, result2) {
-                        console.log(err2)
-        
-                        if (result2 && !err2) {
-                            result2['MNRequests'].push(result._id)
-                            result2.save();
-                        }
-                    })
-        
-                    return res.json({
-                        success: true,
-                        payload: null,
-                        message: 'Request Successfully saved'
-                    })
-                }
-                else {
-                    return res.json({
-                        success: false,
-                        payload: null,
-                        message: 'Unable to save Request '
-                    })
-                }
-        
-            })
-        }
-    })
 
 
 
@@ -195,48 +199,54 @@ module.exports.Apply = function (req, res) {
 
     //get request and mentor
     var mentor = req.user;
-
-    //Set Request mentor and update Request state 
-    MnRequestModel.findByIdAndUpdate(req.params.reqId, { ReqMentor: mentor._id, ReqState: 'applied' }, function (err, result) {
+    MnMentorModel.findById(mentor._id, function (err, result) {
 
         if (!err && result) {
-
-            //push request to mentor requests
-            MnMentorModel.findById(mentor._id, function (err2, result2) {
-
+            MnRequestModel.findById(req.params.reqId, async function (err2, result2) {
                 if (!err2 && result2) {
-                    result2.MentorRequests.push(result._id)
-                    result2.save();
-                    return res.json({
-                        success: true,
-                        payload: result,
-                        message: 'Request Successfully Applied'
-                    })
+                    
+                    //push request to mentor requests
+                    result.MentorRequests.push(result2._id)
+                    result.save();
 
-                } else {
-                    return res.json({
-                        success: false,
-                        payload: err2,
-                        message: 'Unable to find mentor'
+                    //generate Meets
+                    var meetsCount = result2.ReqProg.ProgMeetsNum;
+                    var meetsArr=[];
+                    for  (let i = 0; i < meetsCount; i++) { 
+                        var random = (Math.random() + 1).toString(36).substring(4);
+                        var obj={
+                            MeetName:'luccter ' + i+1,
+                            MeetId:random,
+                            MeetMentor:result._id,
+                            MeetRequest:result2._id
+                        };
+                        meetsArr.push(obj)
+                    }
+                    MnMeetModel.insertMany(meetsArr).then((result3)=>{
+
+                        //update Request
+                        var meetsIdArr=result3.map(doc => doc._id);
+                        result2.ReqMentor = result._id;
+                        result2.ReqMeets=meetsIdArr;
+                        result2.ReqState = 'applied';
+                        result2.save(function(err4,result4){
+                            if(!err4 && result4){
+                                console.log(result4)
+                                return res.json({
+                                    success: true,
+                                    payload: result4,
+                                    message: 'Request Successfully Applied'
+                                })
+                            }
+
+                        });
+                        
                     })
                 }
-
-            })
-        }
-        else {
-            return res.json({
-                success: false,
-                payload: null,
-                message: 'Unable to find request'
-            })
+            }).populate(populate.RequestPopulation);
         }
 
-    });
-
-
-    //
-
-
+    })
 }
 
 

@@ -6,8 +6,8 @@ const MnMeetModel = new Schema({
 
     MeetName: { type: String, required: true },
     MeetId: { type: String, required: true },
-    MeetDate:{type:Date,required:true},
-    MeetStatus:{type:Boolean,default:0},
+    MeetDate:{type:Date},
+    MeetStatus:{type:Boolean,default:0}, //0 ==!Done 1==Done
     MeetMentor:{ type: mongoose.Schema.Types.ObjectId, ref: 'MnMentor' },
     MeetSession:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMeetSession'}],
     MeetRates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnMeetRate' }],

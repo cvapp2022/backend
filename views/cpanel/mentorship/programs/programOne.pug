@@ -1,18 +1,22 @@
 extends ../../layout
 
 block content
-
-    h4 Program One view
-    .row 
-        h3 mentors list
-        each mentor in mentors 
-            .card
-                .d-flex.justify-content-between.my-3 
-                    h4=mentor.item.MentorName
-                    if(mentor.inProgram)
-                        button.btn.btn-danger.removeFromProgBtn(data-prog=program._id,data-mentor=mentor.item._id) remove From program 
-                    else
-                        button.btn.btn-primary.addToProgBtn(data-prog=program._id,data-mentor=mentor.item._id) add to program 
+    .row
+        .col-sm-12 
+            h3 mentors list
+            each mentor in mentors 
+                .card.my-2
+                    .card-body 
+                        .d-flex.justify-content-between
+                            h4=mentor.item.MentorName
+                            if(mentor.inProgram)
+                                button.btn.btn-danger.removeFromProgBtn(data-prog=program._id,data-mentor=mentor.item._id) remove From program 
+                            else
+                                button.btn.btn-primary.addToProgBtn(data-prog=program._id,data-mentor=mentor.item._id) add to program 
+    .row.my-4
+        .col-sm-12 
+            h3 Preparation
+            a.btn.btn-primary.btn-block(href="/Cpanel/Mentorship/Programs/"+program._id+"/preparation/new") Add New prepartion 
 
 
 block script 

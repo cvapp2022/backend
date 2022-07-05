@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const CvTemplate = new Schema({ 
 
   TemplateName:{type:String,required:true},
-  TemplateThumb:{type:String,required:true},
+  TemplateThumb:{type:String,default:process.env.TEMPLATE_THUMBNAIL_DEFAULT},
   TemplateDesc:{type:String,required:true}, 
   TemplateStatus:{type:Number,default:1},
   TemplateFor:{type:String,default:'cv'}, // cv ,cl
