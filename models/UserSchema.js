@@ -14,6 +14,7 @@ const UserModel = new Schema({
     CVUCvId:[{type:mongoose.Schema.Types.ObjectId, ref: 'BLCV'}],
     CVUClId:[{type:mongoose.Schema.Types.ObjectId, ref: 'BLCL'}],
     MNRequests:[{type:mongoose.Schema.Types.ObjectId, ref: 'MnRequest'}],
+    UserNotif:[{type:mongoose.Schema.Types.ObjectId, ref: 'BLUserNotif'}],
     CVUserPass:{type:String,min:8,required:true} 
 });
       

@@ -11,7 +11,7 @@ module.exports.SavePost = function (req, res) {
 
     //validate inputs 
     const errors = validationResult(req);
-    if (errors.errors.length > 0) {
+    if (errors.errors.length > 0 || !req.files.mentorImgI) {
         return res.status(400).json({
             success: false,
             payload: errors.errors,
@@ -29,7 +29,7 @@ module.exports.SavePost = function (req, res) {
                 msg: 'Mentor Email Already in use'
             });
         }
-        else if (!err && result.length === 0) {
+        else if (!err && result.length === 0 ) {
 
             //updload mentor image
             facades.createFolder(req.body.mentorNameI, 'mentors', function (folderId) {
@@ -59,6 +59,9 @@ module.exports.SavePost = function (req, res) {
 
                 })
             })
+        }
+        else{
+            return res.send('unable to save mentor');
         }
     })
 

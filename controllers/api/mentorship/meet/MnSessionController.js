@@ -2,17 +2,8 @@ const SessionModel = require('../../../../models/mn/Meet/MeetSession')
 const MeetModel = require('../../../../models/mn/MnMeetSchema')
 const MnSessionAttachmentModel = require('../../../../models/mn/Session/SessionAttachment')
 const facades = require('../../../../others/facades')
-
+const population = require('../../../../others/populations')
 module.exports.Save = function (req, res) {
-
-
-    //
-    // SessionId:{ type: String, required: true },
-    // SessionEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnSessionEvent' }],
-    // SessionAttachments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SessionAttachment' }],
-    // SessionMessage:[{ type: mongoose.Schema.Types.ObjectId, ref: 'SessionMessage' }],
-    // SessionPeers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'SessionPeer' }],
-    // isActive:{type:Boolean,default:true}
 
     //validate input
     if (!req.body.MeetIdI) {
@@ -42,6 +33,15 @@ module.exports.Save = function (req, res) {
                     if (!err2 && result2) {
                         result2.MeetSession.push(result._id)
                         result2.save();
+
+                        //trigger user 
+                        var io = req.app.get('socketio');
+                        io.to(result2.MeetRequest.ReqUser.toString()).emit('SESSION_CREATED', {})
+
+                        //get user and send notif to it
+                        facades.saveNotif('user', result2.MeetRequest.ReqUser, 'RedirectToSession', 'Your Meet Session Is Ready Please Enter Classroom')
+
+
                         return res.json({
                             success: true,
                             payload: result,
@@ -56,7 +56,7 @@ module.exports.Save = function (req, res) {
                         })
                     }
 
-                })
+                }).populate('MeetRequest')
 
             }
             else {
@@ -94,7 +94,17 @@ exports.Upload = function (req, res) {
 
                         //fetch all files
                         MnSessionAttachmentModel.find({ AttachmentSession: sessionId }, function (err3, result3) {
-                            return res.json(result3);
+
+                            var io = req.app.get('socketio');
+                            console.log(result.SessionId)
+                            io.to(result.SessionId).emit("FILE_UPLOADED", result3);
+
+                            return res.json({
+                                success: true,
+                                payload: result3,
+                                msg: 'File Successfully Uploaded'
+                            });
+                            //return res.json(result3);
                         })
 
                     }
@@ -103,7 +113,7 @@ exports.Upload = function (req, res) {
 
         }
 
-    })
+    }).populate('SessionAttachments')
 
 
 

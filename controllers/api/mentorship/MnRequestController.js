@@ -8,7 +8,7 @@ const populate = require('../../../others/populations')
 const facades = require('../../../others/facades')
 
 
-module.exports.Get = function (req, res) {
+module.exports.Get =async function (req, res) {
 
     var type = req.params.type;
     var user = req.user;
@@ -17,21 +17,14 @@ module.exports.Get = function (req, res) {
         query = { ReqUser: user._id }
     }
     else if (type === 'mentor') {
-        //query={ ReqMentor:user._id};
-        //get mentor 
-        MnMentorModel.findById(user._id, function (err, result) {
-            if (!err && result) {
-                query = { ReqProg: { $in: result.MentorPrograms } };
-            }
-            else {
-
+        var programsArr;
+        await MnMentorModel.findById(user._id).then((result0)=>{
+            if(result0){
+                programsArr=result0.MentorPrograms;
             }
         })
-
-
+        query = { ReqProg: { $in: programsArr } };
     }
-
-
     MnRequestModel.find(query, function (err2, result2) {
 
         if (!err2) {
@@ -164,17 +157,16 @@ module.exports.Save = function (req, res) {
         }
 
     })
-
-
-
-
-
 }
 
 module.exports.Pay = function (req, res) {
 
+    var user=req.user;
+
     //update Request state 
     MnRequestModel.findByIdAndUpdate(req.params.reqId, { ReqState: 'searching' }, function (err, result) {
+
+        facades.saveNotif('user',user._id,'RedirectToRequests','Request Successfully Paid',true)
 
         if (!err && result) {
             return res.json({
@@ -231,7 +223,16 @@ module.exports.Apply = function (req, res) {
                         result2.ReqState = 'applied';
                         result2.save(function(err4,result4){
                             if(!err4 && result4){
-                                console.log(result4)
+                                
+                                //push notification 
+                                facades.saveNotif('user',result2.ReqUser._id,'RedirectToRequests','mentor '+mentor.MentorName+' applied your mentorship request')
+                                //facades.saveNotif('mentor')
+                                
+                                //trigger user 
+                                var io=req.app.get('socketio');
+                                
+                                io.to(result2.ReqUser._id.toString()).emit('REQUEST_APPLIED',{})
+
                                 return res.json({
                                     success: true,
                                     payload: result4,

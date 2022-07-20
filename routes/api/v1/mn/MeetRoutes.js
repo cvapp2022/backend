@@ -7,7 +7,8 @@ const MeetController = require('../../../../controllers/api/mentorship/MnMeetCon
 var router = express.Router();
 
 
-router.post('/',auth.validateToken,Validate.MnMeetValidate,MeetController.Save)
+//router.post('/',auth.validateToken,Validate.MnMeetValidate,MeetController.Save)
 
+router.put('/:meetId',auth.validateToken,Validate.MnMeetValidate,MeetController.Update)
 
 module.exports = router;

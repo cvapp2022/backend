@@ -49,7 +49,7 @@ exports.UserPopulate = [{
         },
         {
             path: 'CVImg'
-        }
+        },
         // {
         //     path: 'CVExp',
         //     populate: [
@@ -116,15 +116,24 @@ exports.UserPopulate = [{
                 populate: [
                     {
                         path: 'MeetSession',
-                        populate:[{
-                            path:'SessionMessage'
-                        }]
+                        populate:[
+                            {
+                                path:'SessionMessage'
+                            },
+                            {
+                                path:'SessionAttachments'
+                            }
+                        ]
                     },
 
                 ]
 
             }
         ]
+},
+{
+    path:'UserNotif',
+    options:{limit:6}
 }
 ];
 
@@ -142,9 +151,14 @@ exports.RequestPopulation = [
         populate:
             [{
                 path: 'MeetSession',
-                populate:[{
-                    path:'SessionMessage'
-                }]
+                populate:[
+                    {
+                        path:'SessionMessage',
+                    },
+                    {
+                        path:'SessionAttachments'
+                    }
+            ]
             }]
     }
 ];
@@ -161,6 +175,10 @@ exports.ProgramPopulation = [
 exports.MentorPopulation = [
     {
         path: 'MentorRequests'
+    },
+    {
+        path:'MentorNotif',
+        options:{limit:6}
     }
 ]
 

@@ -9,8 +9,9 @@ const MnProgramModel = new Schema({
     ProgImg:{type:String,default:process.env.PROGRAM_THUMBNAIL_DEFAULT},
     ProgMeetsNum:{type:Number,default:1},
     ProgFolder:{type:String,required:true},
-    //ProgMeets:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMeet'}], 
+    ProgPreparation:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnProgramPrepartion'}],
     ProgMentors:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMentor'}],
+    //ProgMeets:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMeet'}], 
 })
 
 // id 

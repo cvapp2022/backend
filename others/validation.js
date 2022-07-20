@@ -315,6 +315,21 @@ exports.MnMentorValidate = [
 ]
 //End Mentroship Program Save Validation
 
+//start Template Save Validate 
+exports.TemplateValidate = [
+        check('templateNameI').notEmpty()
+                .withMessage('template name is required'),
+        check('templatePriceI').notEmpty()
+                .withMessage('mentor mail Is Required'),
+        check('templateDescI').notEmpty()
+                .withMessage('template Desc Is Required'),
+        check('templatePaidI').notEmpty()
+                .withMessage('template status paid required'),
+        check('templateForI').notEmpty()
+                .withMessage('Template for is requred')
+
+]
+//End Template Save Validate 
 
 //Start Mentroship Request save Validation
 exports.MnRequestValidate = [
@@ -340,9 +355,7 @@ exports.MnMeetValidate = [
         check('MeetRequestIdI').notEmpty()
                 .withMessage('Meet Request id Is required')
 ]
-
 //end mentorship meet save validation
-
 
 
 //start Blog Category Save Validation
@@ -377,7 +390,23 @@ exports.BlogPostChild = [
                 .withMessage('Post Thumbnail  Is required'),
         check('postBodyI').notEmpty()
                 .withMessage('Post Body Is required'),
-                
-        
 ]
 //end Blog Post Child Save Validation
+
+
+//start program preparation save validation
+exports.ProgramPreparationValidate = [
+        check('prepNameI').notEmpty()
+                .withMessage('preparation Title Is required'),
+        check('perpMeetI').notEmpty()
+                .withMessage('Perperation Meet  Is required'),
+]
+
+exports.MessageValidate = [
+        check('msgFromI').notEmpty()
+                .withMessage('Message From Is required'),
+        check('msgValueI').notEmpty()
+                .withMessage('Message Value Is required'),
+        check('msgSenderIdI').notEmpty()
+                .withMessage('Message Sender Is required'),
+]

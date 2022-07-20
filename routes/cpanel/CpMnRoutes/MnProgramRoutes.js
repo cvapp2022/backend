@@ -8,7 +8,7 @@ const multer = require('multer');
 
 
 var router = express.Router();
-const upload = multer({limits:{fieldSize:1024}});
+const upload = multer({limits:{fileSize:524288}});
 
 
 router.get('/new',MnProgramController.SaveGet)
@@ -20,9 +20,12 @@ router.get('/list',MnProgramController.ListGet)
 
 router.get('/:progId',MnProgramController.ProgramOneGet)
 
-router.get('/:progId/preparation/new',MnProgramPreparation.SaveGet)
+router.get('/:progId/preparation/:prepId',MnProgramPreparation.prepareOneGet)
 
-router.post('/:progId/preparation/new',MnProgramPreparation.SavePost)
+const pupload2=upload.fields([{name: 'file',fieldSize:524288}])
+router.post('/:progId/preparation/:prepId/upload/:lang',pupload2,MnProgramPreparation.prepareUpload)
+
+// router.post('/:progId/:meet/preparation/new',Validate.ProgramPreparationValidate,MnProgramPreparation.SavePost)
 
 router.post('/addMentorToProg',MnProgramController.addMentorToProg)
 

@@ -138,7 +138,6 @@ exports.Update = function (req, res) {
 
 exports.Delete = function (req, res) {
 
-
     var ClId = new ObjectId(req.params.clId);
     if (!ObjectId.isValid(req.params.clId)) {
         return res.json({
@@ -167,12 +166,8 @@ exports.Delete = function (req, res) {
                                 payload: { list: result3, item: result },
                                 msg: 'Cover letter Successfully Deleted '
                             });
-
                         }
-
                     })
-
-
                 }
             })
         }

@@ -15,9 +15,20 @@ block content
                                 button.btn.btn-primary.addToProgBtn(data-prog=program._id,data-mentor=mentor.item._id) add to program 
     .row.my-4
         .col-sm-12 
-            h3 Preparation
-            a.btn.btn-primary.btn-block(href="/Cpanel/Mentorship/Programs/"+program._id+"/preparation/new") Add New prepartion 
+            h3 Preparation list
+            -var t=program.ProgPreparation
+            .row 
+                each prep in program.ProgPreparation
+                    .col-sm-3
+                        .card 
+                            .card-body 
+                                h4=prep.PrepareName
+                                a.btn.btn-primary(href="/Cpanel/Mentorship/Programs/"+program._id+"/preparation/"+prep._id) manage
+                
 
+
+            //- - for (var i = 0; i < t; ++i)
+            //- while n < t
 
 block script 
     script.

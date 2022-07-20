@@ -3,9 +3,11 @@ const CVMetaModel = require('../models/cv/CvMetaSchema');
 const CvModel = require('../models/CvSchema');
 const SkillModel = require('../models/cv/SkillSchema');
 const UserModel = require('../models/UserSchema');
+const MentorModel = require('../models/mn/MnMentorSchema')
 const MnMeetModel = require('../models/mn/MnMeetSchema')
-
-const population=require('./populations')
+const UserNotif = require('../models/UserNotifSchema')
+const MentorNotif = require('../models/mn/MnMentorNotifSchema')
+const population = require('./populations')
 const { google } = require('googleapis');
 const stream = require('stream');
 
@@ -16,7 +18,7 @@ exports.saveCvMeta = function (arr, CvId) {
 
 
         var update = {
-            MetaValue:item.value
+            MetaValue: item.value
         }
 
         CVMetaModel.findOneAndUpdate({ CVId: CvId, MetaKey: item.key }, update, function (err, result) {
@@ -180,7 +182,7 @@ exports.googleAuth = function () {
     //client secret
     const CLIENT_SECRET = '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';
 
-    const REFRESH_TOKEN = '1//04HlUviOjiDn3CgYIARAAGAQSNwF-L9IrGZN-bXUGMPiNikWRMZwb8Veb3HPvRVHij9S2bL17co5ymo9uB6hRN8MDchsd_ra7mrQ';
+    const REFRESH_TOKEN = '1//04HANCChxx1I7CgYIARAAGAQSNwF-L9IrejY3Vx4p1Eaq970AuZnpxHSGBEzQuO2Po-G6qwxakW16crbKrENeXTl73JFI1-kMvFE';
 
     const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
@@ -199,33 +201,37 @@ exports.googleAuth = function () {
 }
 
 
-exports.uploadFileTo=async function(file,to,folderId,callback){
+exports.uploadFileTo = async function (file, to, folderId, callback) {
 
-    
+
     let nfolder;
     let dfile;
-    if(to === 'template'){
-        nfolder=process.env.TEMPLATE_FOLDER;
-        dfile=process.env.TEMPLATE_THUMBNAIL_DEFAULT;
+    if (to === 'template') {
+        nfolder = process.env.TEMPLATE_FOLDER;
+        dfile = process.env.TEMPLATE_THUMBNAIL_DEFAULT;
     }
-    else if(to === 'program'){
-        nfolder=folderId;
-        dfile=process.env.PROGRAM_THUMBNAIL_DEFAULT;
+    else if (to === 'program') {
+        nfolder = folderId;
+        dfile = process.env.PROGRAM_THUMBNAIL_DEFAULT;
     }
-    else if(to ==='post'){
-        nfolder=folderId;
-        dfile=process.env.POST_THUMBNAIL_DEFAULT
+    else if (to === 'post') {
+        nfolder = folderId;
+        dfile = process.env.POST_THUMBNAIL_DEFAULT
     }
-    else if(to==='mentor'){
-        nfolder=folderId;
-        dfile=process.env.MENTOR_THUMBNAIL_DEFAULT
+    else if (to === 'mentor') {
+        nfolder = folderId;
+        dfile = process.env.MENTOR_THUMBNAIL_DEFAULT
     }
-    else if(to ==='session'){
-        nfolder=folderId;
-        dfile='';
+    else if (to === 'session') {
+        nfolder = folderId;
+        dfile = '';
+    }
+    else if (to === 'preparation') {
+        nfolder = folderId;
+        dfile = '';
     }
 
-    var oauth2Client =exports.googleAuth();
+    var oauth2Client = exports.googleAuth();
     const drive = google.drive({
         version: 'v3',
         auth: oauth2Client,
@@ -239,15 +245,15 @@ exports.uploadFileTo=async function(file,to,folderId,callback){
 
         drive.files.create({
             fields: 'id',
-            resource:{
-                'name':file.name,
-                'parents':[nfolder],
+            resource: {
+                'name': file.name,
+                'parents': [nfolder],
             },
             media: {
                 mimeType: file.mimetype,
                 body: bufferStream,
             },
-        }).then((resp)=>{
+        }).then((resp) => {
 
             //set permisions
             drive.permissions.create({
@@ -258,38 +264,44 @@ exports.uploadFileTo=async function(file,to,folderId,callback){
                 fileId: resp.data.id
             }).then((resp2) => {
                 callback(resp.data.id)
-            }).catch((err2)=>{
+            }).catch((err2) => {
                 callback(dfile)
-                console.log('setting permision',err2)
+                console.log('setting permision', err2)
             });
         })
-        .catch((err)=>{
-            callback(dfile)
-            console.log('error from saving file',err)
-            callback(dfile)
-        });
+            .catch((err) => {
+                callback(dfile)
+                console.log('error from saving file', err)
+                callback(dfile)
+            });
 
     } catch (error) {
         console.log(error)
     }
 }
 
-exports.createFolder=function(name,to,callback){
+exports.createFolder = function (name, to, callback) {
 
     let pfolder;
-    if(to === 'posts'){
-        pfolder=process.env.POST_FOLDER;
+    if (to === 'posts') {
+        pfolder = process.env.POST_FOLDER;
     }
-    else if(to === 'programs'){
-        pfolder=process.env.PROGRAM_FOLDER;
+    else if (to === 'programs') {
+        pfolder = process.env.PROGRAM_FOLDER;
     }
-    else if(to ==='mentors'){
-        pfolder=process.env.MENTOR_FOLDER;
+    else if (to === 'mentors') {
+        pfolder = process.env.MENTOR_FOLDER;
     }
-    else if(to ==='session'){
-        pfolder=process.env.SESSION_FOLDER;
+    else if (to === 'session') {
+        pfolder = process.env.SESSION_FOLDER;
     }
-    var oauth2Client =exports.googleAuth();
+    else if (to === 'preparation') {
+        pfolder = to;
+    }
+    else {
+        pfolder = to;
+    }
+    var oauth2Client = exports.googleAuth();
     const drive = google.drive({
         version: 'v3',
         auth: oauth2Client,
@@ -298,15 +310,60 @@ exports.createFolder=function(name,to,callback){
     try {
         drive.files.create({
             fields: 'id',
-            resource:{
-                'name':name,
-                'parents':[pfolder],
+            resource: {
+                'name': name,
+                'parents': [pfolder],
                 'mimeType': 'application/vnd.google-apps.folder',
             }
-        }).then((resp)=>{
+        }).then((resp) => {
             callback(resp.data.id)
         })
     } catch (error) {
-        throw   error;
+        throw error;
     }
+}
+
+exports.saveNotif = function (to, targetId, action, message,push) {
+
+    if (to === 'mentor') {
+        var saveNotif = new MentorNotif();
+        saveNotif.NotifMentor = targetId;
+    }
+    else if (to === 'user') {
+        var saveNotif = new UserNotif();
+        saveNotif.NotifUser = targetId;
+    }
+    else if(to ==='userall'){
+        var saveNotif = new UserNotif();
+    }
+
+    saveNotif.NotifAction = action;
+    saveNotif.NotifMessage = message;
+    saveNotif.save(function (err, result) {
+
+        if (!err && result) {
+            //push notif to target 
+            if (to === 'mentor') {
+                MentorModel.findById(targetId, function (err2, result2) {
+                    if (!err2) {
+                        result2.MentorNotif.push(result._id);
+                        result2.save();
+                    }
+                })
+            }
+            else if (to === 'user') {
+                UserModel.findById(targetId, function (err2, result2) {
+                    if (!err2) {
+                        result2.UserNotif.push(result._id);
+                        result2.save();
+                    }
+                })
+            }
+            else if(to === 'userall'){
+                UserModel.updateMany({},{$push:{UserNotif:result}},{},function(err3,result3){
+                    console.log(result3)
+                })
+            }
+        }
+    });
 }

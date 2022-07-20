@@ -9,7 +9,7 @@ const CvTemplate = new Schema({
   TemplateThumb:{type:String,default:process.env.TEMPLATE_THUMBNAIL_DEFAULT},
   TemplateDesc:{type:String,required:true}, 
   TemplateStatus:{type:Number,default:1},
-  TemplateFor:{type:String,default:'cv'}, // cv ,cl
+  TemplateFor:{type:String,required:true}, // cv ,cl
   TemplatePrice:{type:Number,required:true,default:0},
   isPaid:{type:Boolean,default:false},
 });

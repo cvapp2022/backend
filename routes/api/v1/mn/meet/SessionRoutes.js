@@ -4,6 +4,7 @@ const auth = require('../../../../../others/auth');
 const multer = require('multer');
 
 const SessionController = require('../../../../../controllers/api/mentorship/meet/MnSessionController')
+const MessageController = require('../../../../../controllers/api/mentorship/meet/session/MessageController')
 
 var router = express.Router();
 const upload = multer({limits:{fieldSize:1024}});
@@ -14,5 +15,6 @@ router.post('/',auth.validateToken,Validate.MnMeetValidate,SessionController.Sav
 const pUpload=upload.single('file');
 router.post('/:sessionId/upload',pUpload,auth.validateToken,SessionController.Upload)
 
+router.post('/:sessionId/message',auth.validateToken,Validate.MessageValidate,MessageController.Save)
 
 module.exports = router;

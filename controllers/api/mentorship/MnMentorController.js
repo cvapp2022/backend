@@ -1,9 +1,10 @@
 const { validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs');
 MentorModel = require('../../../models/mn/MnMentorSchema')
+const RequestModel = require('../../../models/mn/MnRequestSchema')
 const auth = require('../../../others/auth');
-
-
+const facades=require('../../../others/facades');
+const { MentorPopulation } = require('../../../others/populations');
 
 
 
@@ -57,6 +58,18 @@ module.exports.Login = function (req, res) {
                 MentorModel.findById(result._id, function (err, result) {
 
                     if (!err && result) {
+
+                        //get num of available requests
+                        query = {ReqStatus:1,ReqState:'searching', ReqProg: { $in: result.MentorPrograms } };
+                        RequestModel.find(query,function(err2,result2){
+                            if(result2.length >0){
+
+                                //push notification to mentor
+                                facades.saveNotif('mentor',result._id,'RedirectToRequests','You Have '+result2.length+' Available Requests',true)
+                       
+                            }
+                        })
+
                         return res.status(200).json({
                             success: true,
                             payload: {
@@ -73,7 +86,7 @@ module.exports.Login = function (req, res) {
                         });
                     }
 
-                })
+                }).populate(MentorPopulation)
             }
             else {
                 return res.status(200).json({

@@ -68,7 +68,7 @@ exports.Save= function(req,res,next){
                 var token = auth.generateToken(result2.toJSON())
                 var user = facades.GetUser(result2._id,true,function(x){
 
-                
+                    facades.saveNotif('user',result2._id,'RedirectToDashboard','Your Account Successfully Registerd',false)
 
                     return res.json({
                         success:true,

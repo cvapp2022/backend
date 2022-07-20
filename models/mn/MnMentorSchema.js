@@ -16,6 +16,7 @@ const MnMentorModel = new Schema({
     MentorFolder:{ type: String, required: true },
     MentorPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnProgram' }],
     MentorRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MnRequest' }],
+    MentorNotif:[{type:mongoose.Schema.Types.ObjectId, ref: 'MnMentorNotif'}],
 })
 
 MnMentorModel.methods.encryptPassword = function (password) {
