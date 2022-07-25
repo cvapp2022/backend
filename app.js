@@ -109,10 +109,15 @@ function log(message, data) {
 
 
 io.on('connection', function (socket) {
+
+
   socket.on('MENTOR_JOIN', function (data) {
     socket.join(data._id)
     console.log('mentor Joined socket',data._id)
+    io.to(data._id).emit('MENTOR_JOINED')
   })
+
+
   socket.on('join', function (data) {
     socket.join(data.session);
     console.log('socket joined')
@@ -120,9 +125,10 @@ io.on('connection', function (socket) {
   
 
 
-  socket.on('USER_JOIN', function (data) {
-    socket.join(data._id)
-    console.log('user joind scocket',data._id)
+  socket.on('USER_JOIN', function (userId) {
+    socket.join(userId)
+    console.log('user joind scocket',userId)
+    io.to(userId).emit('USER_JOINED')
   })
 
 
@@ -148,7 +154,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug')
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 //conect To MongoDB
 var mongoDB = process.env.MONGOURL;
 //var mongoDB='mongodb://127.0.0.1/BlaxkCV';
@@ -168,11 +173,12 @@ app.use(function (req, res, next) {
 });
 
 //require('./others/test')();
-// app.get('/', function (req, res) {
-//   var sum = 0;
-//   rooms.forEach((v, k) => sum = sum + v.size);
-//   res.send('Lobby server<br/>rooms: ' + rooms.size + '<br/>members: ' + sum);
-// });
+app.get('/', function (req, res) {
+  res.render('helloWorld', { message: 'Hello World!' });
+  var sum = 0;
+  rooms.forEach((v, k) => sum = sum + v.size);
+  //res.send('Lobby server<br/>rooms: ' + rooms.size + '<br/>members: ' + sum);
+});
 app.use('/api/v1/', AppRoutes)
 app.use('/api/v1/User/', UserRoutes)
 

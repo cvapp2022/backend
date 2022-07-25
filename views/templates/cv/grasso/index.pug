@@ -4,17 +4,17 @@ block style
     link(rel="stylesheet", href="http://127.0.0.1:5000/templates/grasso.css")
 block content
     .container
-        .row.justify-content-between.py-5.mb-4.b-border
-            div 
+        .row.py-5.mb-4.b-border
+            .col-xs-8 
                 h4.full-name Karen Richards
                 h4 Full stack web developer
-            div
+            .col-xs-4
                 p.mb-1 +963 949 991 984
                 p.mb-1 ahmad.alaswad.dev@gmail.com
                 p.mb-1 Syria Aleppo Al-shanqiti street
                 p.mb-1 Linkedin.com/ahmad.alaswad
         .row
-            .col-sm-4
+            .col-xs-4
                 for section in cv.CvSections.side 
                     if section.name ==='profile'
                         include ./lists/profileList
@@ -32,7 +32,7 @@ block content
                         include ./lists/skillList
                     if section.name ==='contacts' && cv.CVContact.length > 0 
                         include ./lists/contactList
-            .col-sm-8.px-0.l-border
+            .col-xs-8.px-0.l-border
                 for section in cv.CvSections.main 
                     if section.name ==='profile'
                         include ./lists/profileList

@@ -8,7 +8,7 @@ const populate = require('../../../others/populations')
 const facades = require('../../../others/facades')
 
 
-module.exports.Get =async function (req, res) {
+module.exports.Get = async function (req, res) {
 
     var type = req.params.type;
     var user = req.user;
@@ -18,15 +18,16 @@ module.exports.Get =async function (req, res) {
     }
     else if (type === 'mentor') {
         var programsArr;
-        await MnMentorModel.findById(user._id).then((result0)=>{
-            if(result0){
-                programsArr=result0.MentorPrograms;
+        await MnMentorModel.findById(user._id).then((result) => {
+            if (result) {
+                programsArr = result.MentorPrograms;
             }
         })
         query = { ReqProg: { $in: programsArr } };
     }
-    MnRequestModel.find(query, function (err2, result2) {
 
+    //get requests dates 
+    MnRequestModel.find(query, function (err2, result2) {
         if (!err2) {
             return res.json({
                 success: true,
@@ -36,47 +37,7 @@ module.exports.Get =async function (req, res) {
         }
 
     }).populate(populate.RequestPopulation)
-
-
-
-    //get requests for mentor 
-
-    // var mentor = req.user;
-    // MnRequestModel.find({ ReqMentor:mentor._id}, function (err2, result2) {
-    //     if (!err2 && result2 ) {
-    //         return res.json({
-    //             success: true,
-    //             payload: result2,
-    //             message: 'Requests Successfully loaded'
-    //         })
-    //     }
-    // }).populate(populate.RequestPopulation)
-
-    // MnMentorModel.findById(mentor._id, function (err, result) {
-
-    //     if (!err && result) {
-    //         MnRequestModel.find({ ReqProg: { $in: result.MentorPrograms }}, function (err2, result2) {
-    //             console.log(err2,result)
-    //             if (!err2 && result2 ) {
-    //                 return res.json({
-    //                     success: true,
-    //                     payload: result2,
-    //                     message: 'Requests Successfully loaded'
-    //                 })
-    //             }
-    //             else{
-    //                 console.log(err2)
-    //             }
-
-    //         }).populate(populate.RequestPopulation)
-    //     }
-
-    // })
-
 }
-
-
-
 
 module.exports.Save = function (req, res) {
 
@@ -128,11 +89,12 @@ module.exports.Save = function (req, res) {
                                     result4.save();
                                 }
                             })
-
-                            return res.json({
-                                success: true,
-                                payload: null,
-                                message: 'Request Successfully saved'
+                            MnRequestModel.populate(result3, populate.RequestPopulation, function (err5, result5) {
+                                return res.json({
+                                    success: true,
+                                    payload: result5,
+                                    message: 'Request Successfully saved'
+                                })
                             })
                         }
                         else {
@@ -159,20 +121,70 @@ module.exports.Save = function (req, res) {
     })
 }
 
-module.exports.Pay = function (req, res) {
 
-    var user=req.user;
+module.exports.Update = function (req, res) {
 
-    //update Request state 
-    MnRequestModel.findByIdAndUpdate(req.params.reqId, { ReqState: 'searching' }, function (err, result) {
+    var user = req.user
 
-        facades.saveNotif('user',user._id,'RedirectToRequests','Request Successfully Paid',true)
+    //validate input 
+    if (!req.body.DatesI || req.body.DatesI.length == 0) {
+        return res.json({
+            success: false,
+            payload: null,
+            message: 'Validation Error'
+        })
+    }
+
+    //validate params
+
+    //update request 
+    var query = { ReqDates: req.body.DatesI };
+    MnRequestModel.findByIdAndUpdate(req.params.reqId, query, function (err, result) {
 
         if (!err && result) {
+
+            //send notif to mentor
+            if (result.ReqState === 'applied' && result.ReqState === 'active') {
+
+                var io = req.app.get('socketio');
+                facades.saveNotif('mentor', result.ReqMentor, 'RedirectToRequest', 'user updated mentorship request', true, io)
+            }
+
             return res.json({
                 success: true,
                 payload: result,
-                message: 'Request Successfully Paid'
+                message: 'Request Dates Successfully Updated'
+            })
+        }
+
+    })
+
+}
+
+module.exports.Pay = function (req, res) {
+
+    var user = req.user;
+
+    //update Request state 
+    MnRequestModel.findById(req.params.reqId, function (err, result) {
+
+        if (!err && result) {
+            result.ReqState = 'searching';
+            result.save(function (err2, result2) {
+                if (!err2) {
+
+                    //trigger user 
+                    var io = req.app.get('socketio');
+                    facades.saveNotif('user', user._id, 'RedirectToRequests', 'Request Successfully Paid', true, io)
+
+                    return res.json({
+                        success: true,
+                        payload: result2,
+                        message: 'Request Successfully Paid'
+                    })
+
+                }
+
             })
         }
         else {
@@ -182,72 +194,180 @@ module.exports.Pay = function (req, res) {
                 message: 'Unable to update Request State'
             })
         }
-    })
+    }).populate(populate.RequestPopulation)
 }
 
-module.exports.Apply = function (req, res) {
+module.exports.Apply = async function (req, res) {
 
     //check param
 
-    //get request and mentor
-    var mentor = req.user;
-    MnMentorModel.findById(mentor._id, function (err, result) {
+    //get mentor applied active requests dates and requests Dates
+    var programsArr;
+    await MnMentorModel.findById(req.user._id).then((result) => {
+        if (result) {
+            programsArr = result.MentorPrograms;
+        }
+    })
+    query = { ReqProg: { $in: programsArr } };
 
-        if (!err && result) {
-            MnRequestModel.findById(req.params.reqId, async function (err2, result2) {
-                if (!err2 && result2) {
-                    
-                    //push request to mentor requests
-                    result.MentorRequests.push(result2._id)
-                    result.save();
+    MnRequestModel.find(query, function (err2, result2) {
+        var mentorRequestsDates = [];
+        var conflictDates = []
+        var appliedRequest;
+        result2.find((item) => {
+            if (item.ReqMentor && item.ReqMentor._id.toString() === req.user._id) {
 
-                    //generate Meets
-                    var meetsCount = result2.ReqProg.ProgMeetsNum;
-                    var meetsArr=[];
-                    for  (let i = 0; i < meetsCount; i++) { 
-                        var random = (Math.random() + 1).toString(36).substring(4);
-                        var obj={
-                            MeetName:'luccter ' + i+1,
-                            MeetId:random,
-                            MeetMentor:result._id,
-                            MeetRequest:result2._id
-                        };
-                        meetsArr.push(obj)
-                    }
-                    MnMeetModel.insertMany(meetsArr).then((result3)=>{
+                //check meets if has date
+                var reqMeets = item.ReqMeets;
+                if (reqMeets.length > 0) {
+                    reqMeets.forEach(element => {
+                        if (element.MeetDate) {
+                            mentorRequestsDates.push({ date: element.MeetDate })
+                        }
+                    });
 
-                        //update Request
-                        var meetsIdArr=result3.map(doc => doc._id);
-                        result2.ReqMentor = result._id;
-                        result2.ReqMeets=meetsIdArr;
-                        result2.ReqState = 'applied';
-                        result2.save(function(err4,result4){
-                            if(!err4 && result4){
-                                
+                }
+            }
+            else if (item._id.toString() === req.params.reqId) {
+                appliedRequest = item;
+            }
+        })
+        appliedRequest.ReqDates.forEach(element => {
+            mentorRequestsDates.find((item) => {
+                if (new Date(item.date).getTime() == new Date(element.date).getTime()) {
+                    conflictDates.push(item)
+                };
+            })
+
+        });
+        if (conflictDates.length == appliedRequest.ReqDates.length) {
+            return res.json({
+                success: false,
+                payload: null,
+                message: 'Unable to Apply Request No Available Date'
+            })
+        }
+        else {
+
+            //push request to mentor requests
+            MnMentorModel.findById(req.user._id, function (err, result) {
+
+                result.MentorRequests.push(appliedRequest._id)
+                result.save();
+                //generate Meets
+                var meetsCount = appliedRequest.ReqProg.ProgMeetsNum;
+                var meetsArr = [];
+                for (let i = 0; i < meetsCount; i++) {
+                    var random = (Math.random() + 1).toString(36).substring(4);
+                    var obj = {
+                        MeetName: 'luccter ' + i + 1,
+                        MeetId: random,
+                        MeetMentor: result._id,
+                        MeetRequest: appliedRequest._id
+                    };
+                    meetsArr.push(obj)
+                }
+
+                MnMeetModel.insertMany(meetsArr).then((result3) => {
+
+                    //update Request
+                    var meetsIdArr = result3.map(doc => doc._id);
+                    appliedRequest.ReqMentor = result._id;
+                    appliedRequest.ReqMeets = meetsIdArr;
+                    appliedRequest.ReqState = 'applied';
+                    appliedRequest.save(function (err4, result4) {
+                        if (!err4 && result4) {
+
+                            //facades.saveNotif('mentor')
+                            MnRequestModel.populate(result4, populate.RequestPopulation, function (err5, result5) {
+
+                                var io = req.app.get('socketio');
                                 //push notification 
-                                facades.saveNotif('user',result2.ReqUser._id,'RedirectToRequests','mentor '+mentor.MentorName+' applied your mentorship request')
-                                //facades.saveNotif('mentor')
-                                
+                                facades.saveNotif('user', appliedRequest.ReqUser._id, 'RedirectToRequests', 'mentor ' + result.MentorName + ' applied your mentorship request', true, io)
                                 //trigger user 
-                                var io=req.app.get('socketio');
-                                
-                                io.to(result2.ReqUser._id.toString()).emit('REQUEST_APPLIED',{})
-
+                                io.to(appliedRequest.ReqUser._id.toString()).emit('REQUEST_APPLIED', result5)
                                 return res.json({
                                     success: true,
-                                    payload: result4,
+                                    payload: result5,
                                     message: 'Request Successfully Applied'
                                 })
-                            }
 
-                        });
-                        
-                    })
-                }
-            }).populate(populate.RequestPopulation);
+                            })
+
+
+                        }
+
+                    });
+
+                })
+
+            })
         }
 
-    })
+    }).populate(populate.RequestPopulation);
+    //filter valid requests 
 }
+
+// //get request and mentor
+// var mentor = req.user;
+// MnMentorModel.findById(mentor._id, function (err, result) {
+
+//     if (!err && result) {
+//         MnRequestModel.findById(req.params.reqId, async function (err2, result2) {
+//             if (!err2 && result2) {
+
+//                 //push request to mentor requests
+//                 result.MentorRequests.push(result2._id)
+//                 result.save();
+
+//                 //generate Meets
+//                 var meetsCount = result2.ReqProg.ProgMeetsNum;
+//                 var meetsArr = [];
+//                 for (let i = 0; i < meetsCount; i++) {
+//                     var random = (Math.random() + 1).toString(36).substring(4);
+//                     var obj = {
+//                         MeetName: 'luccter ' + i + 1,
+//                         MeetId: random,
+//                         MeetMentor: result._id,
+//                         MeetRequest: result2._id
+//                     };
+//                     meetsArr.push(obj)
+//                 }
+//                 MnMeetModel.insertMany(meetsArr).then((result3) => {
+
+//                     //update Request
+//                     var meetsIdArr = result3.map(doc => doc._id);
+//                     result2.ReqMentor = result._id;
+//                     result2.ReqMeets = meetsIdArr;
+//                     result2.ReqState = 'applied';
+//                     result2.save(function (err4, result4) {
+//                         if (!err4 && result4) {
+
+//                             //trigger user
+//                             var io = req.app.get('socketio');
+//                             //push notification
+//                             facades.saveNotif('user', result2.ReqUser._id, 'RedirectToRequests', 'mentor ' + mentor.MentorName + ' applied your mentorship request', true, io)
+//                             //facades.saveNotif('mentor')
+
+//                             //trigger user
+//                             var io = req.app.get('socketio');
+
+//                             io.to(result2.ReqUser._id.toString()).emit('REQUEST_APPLIED', {})
+
+//                             return res.json({
+//                                 success: true,
+//                                 payload: result4,
+//                                 message: 'Request Successfully Applied'
+//                             })
+//                         }
+
+//                     });
+
+//                 })
+//             }
+//         }).populate(populate.RequestPopulation);
+//     }
+
+// })
 
 

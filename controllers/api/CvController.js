@@ -2,8 +2,7 @@ const { validationResult } = require('express-validator')
 var ObjectId = require('mongoose').Types.ObjectId;
 const { google } = require('googleapis');
 const stream = require('stream');
-
-
+var pdf = require('html-pdf');
 const CvModel = require('../../models/CvSchema');
 const CvMetaModel = require('../../models/cv/CvMetaSchema')
 const UserModel = require('../../models/UserSchema');
@@ -420,6 +419,11 @@ exports.ChangeSort = function (req, res) {
     CvModel.findOneAndUpdate({ _id: CvId }, { CvSections: req.body.SortI }, function (err, result) {
 
         if (!err && result) {
+
+            //trigger user 
+            var io = req.app.get('socketio');
+            io.to(req.user._id.toString()).emit('SECTION_UPDATED', {})
+
             return res.json({
                 success: true,
                 payload: null,
@@ -468,36 +472,37 @@ exports.AddSection = function (req, res) {
                         msg: 'Section Already in use'
                     });
                 }
-                else {
-                    var newSection = { name: req.body.SectionNameI }
-                    var combineSections = [
-                        oldMainSections,
-                        newSection
-                    ]
-                    var newMainSections = combineSections.flat();
+            });
+            
+            var newSection = { name: req.body.SectionNameI }
+            var combineSections = [
+                oldMainSections,
+                newSection
+            ]
+            var newMainSections = combineSections.flat();
 
-                    result.CvSections = {'main':newMainSections,'side':oldSideSections};
-                    result.save(function (err2, result2) {
+            result.CvSections = {'main':newMainSections,'side':oldSideSections};
+            result.save(function (err2, result2) {
 
-                        if (!err2 && result2) {
-                            return res.json({
-                                success: true,
-                                payload: result2,
-                                msg: 'Section Successfully updated'
-                            });
-                        }
-                        // else {
-                        //     // return res.json({
-                        //     //     success: false,
-                        //     //     payload: null,
-                        //     //     msg: 'Unable to update section'
-                        //     // });
-                        // }
+            //trigger user 
+            var io = req.app.get('socketio');
+            io.to(req.user._id.toString()).emit('SECTION_UPDATED', {})
 
+                if (!err2 && result2) {
+                    return res.json({
+                        success: true,
+                        payload: result2,
+                        msg: 'Section Successfully updated'
                     });
-
-
                 }
+                // else {
+                //     // return res.json({
+                //     //     success: false,
+                //     //     payload: null,
+                //     //     msg: 'Unable to update section'
+                //     // });
+                // }
+
             });
 
         }
@@ -617,9 +622,23 @@ exports.Render=function(req,res){
     }
 
     CvModel.findOne({_id:CvId},function(err,result){
-        return res.render('templates/cv/'+result.CVTemplate.TemplateName,{cv:result})
+        return res.render('templates/cv/'+result.CVTemplate.TemplateName,{cv:result},
+        ((err,html)=>{
+            var options = { 
+                format:"A4",
+                border:0,
+                paginationOffset: 1,
+                type:'pdf',
+            }
+            pdf.create(html, options).toBuffer(function(err, buffer){
+                console.log(err)
+              res.set({
+                "Content-Type":"application/pdf",
+                "Content-Disposition": "attachment; filename=test.pdf"
+              });
+              res.end(buffer)
+            });
+          })
+        )
     }).populate(population.CvPopulate)
-
-
 }
-

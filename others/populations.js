@@ -50,53 +50,6 @@ exports.UserPopulate = [{
         {
             path: 'CVImg'
         },
-        // {
-        //     path: 'CVExp',
-        //     populate: [
-        //         {
-        //             path: 'ExpSkill'
-        //         }
-        //     ]
-        // },
-        // {
-        //     path: 'CVSkill'
-        // },
-        // {
-        //     path: 'CVEdu',
-        //     populate: [
-        //         {
-        //             path: 'EduSkill'
-        //         }
-        //     ]
-        // },
-        // {
-        //     path: 'CVProj',
-        //     populate: [{
-        //         path: 'ProjSkill'
-        //     }]
-        // },
-        // {
-        //     path: 'CVReff'
-        // },
-        // {
-        //     path: 'CVContact'
-        // },
-        // {
-        //     path: 'CVOrg'
-        // },
-        // {
-        //     path: 'CVAw',
-        //     options: { sort: { 'AwSort': "ascending" } }
-        // },
-        // {
-        //     path: 'CvMeta'
-        // },
-        // {
-        //     path: 'CVImg'
-        // },
-        // {
-        //     path:'CVTemplate',
-        // },
     ]
 },
 {
@@ -133,7 +86,10 @@ exports.UserPopulate = [{
 },
 {
     path:'UserNotif',
-    options:{limit:6}
+    options:{
+        limit:6,
+        sort: { 'createdAt': "descending" }
+    } 
 }
 ];
 

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 MentorModel = require('../../../models/mn/MnMentorSchema')
 const RequestModel = require('../../../models/mn/MnRequestSchema')
 const auth = require('../../../others/auth');
-const facades=require('../../../others/facades');
+const facades = require('../../../others/facades');
 const { MentorPopulation } = require('../../../others/populations');
 
 
@@ -60,13 +60,16 @@ module.exports.Login = function (req, res) {
                     if (!err && result) {
 
                         //get num of available requests
-                        query = {ReqStatus:1,ReqState:'searching', ReqProg: { $in: result.MentorPrograms } };
-                        RequestModel.find(query,function(err2,result2){
-                            if(result2.length >0){
+                        query = { ReqStatus: 1, ReqState: 'searching', ReqProg: { $in: result.MentorPrograms } };
+                        RequestModel.find(query, function (err2, result2) {
+                            if (result2.length > 0) {
+
+                                //trigger user 
+                                var io = req.app.get('socketio');
 
                                 //push notification to mentor
-                                facades.saveNotif('mentor',result._id,'RedirectToRequests','You Have '+result2.length+' Available Requests',true)
-                       
+                                facades.saveNotif('mentor', result._id, 'RedirectToRequests', 'You Have ' + result2.length + ' Available Requests', true,io)
+
                             }
                         })
 

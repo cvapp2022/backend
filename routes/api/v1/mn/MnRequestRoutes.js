@@ -12,6 +12,8 @@ router.get('/:type',auth.validateToken,MnRequestController.Get)
 
 router.post('/',auth.validateToken,Validate.MnRequestValidate,MnRequestController.Save)
 
+router.put('/:reqId',auth.validateToken,Validate.MnRequestValidate,MnRequestController.Update)
+
 router.put('/:reqId/apply',auth.validateToken,MnRequestController.Apply) //only for mentor-app
 
 router.put('/:reqId/pay',auth.validateToken,MnRequestController.Pay)

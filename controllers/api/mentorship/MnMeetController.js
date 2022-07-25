@@ -3,6 +3,7 @@ const MnMeetModel = require('../../../models/mn/MnMeetSchema')
 const MnProgramModel = require('../../../models/mn/MnProgramSchema')
 const MnRequestModel = require('../../../models/mn/MnRequestSchema')
 const facades = require('../../../others/facades')
+const { RequestPopulation } = require('../../../others/populations')
 // exports.Save = function (req, res) {
 
 
@@ -103,20 +104,28 @@ exports.Update = function (req, res) {
     //get meet and set date 
     MnMeetModel.findOneAndUpdate({ _id: meetId }, query, function (err, result) {
         if (!err && result) {
+            //get request 
+            MnRequestModel.findById(result.MeetRequest._id,function(err2,result2){
 
-            //
-            //trigger user 
-            var io = req.app.get('socketio');
-            io.to(result.MeetRequest.ReqUser.toString()).emit('MEET_SCHEDULED', {})
+                if(!err2 && result2){
 
-            //get user and send notif to it
-            facades.saveNotif('user', result.MeetRequest.ReqUser, 'RedirectToMeet', 'Your Mentor Scheduled new meet Please Check Your Request')
+                    //trigger user 
+                    var io = req.app.get('socketio');
+                    io.to(result.MeetRequest.ReqUser.toString()).emit('MEET_SCHEDULED',result2)
 
-            return res.json({
-                success: true,
-                payload: result,
-                msg: 'Meet Successfully Updated'
-            });
+                    //get user and send notif to it
+                    facades.saveNotif('user', result.MeetRequest.ReqUser, 'RedirectToMeet', 'Your Mentor Scheduled new meet Please Check Your Request',true,io)
+        
+                    return res.json({
+                        success: true,
+                        payload: result,
+                        msg: 'Meet Successfully Updated'
+                    });
+                }
+
+            }).populate(RequestPopulation)
+
+
 
         }
     }).populate('MeetRequest')

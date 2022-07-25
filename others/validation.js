@@ -146,11 +146,12 @@ exports.EduValidate = [
         //Edu Descreption validation
         check('EduDescI').notEmpty()
                 .withMessage('Education Description Is Required'),
-
-        //Edu Type validatione
-        check('EduTypeI').notEmpty()
-                .withMessage('Education Type Is required'),
-
+        // //Edu Type validatione
+        // check('EduTypeI').notEmpty()
+        //         .withMessage('Education Type Is required'),
+        //Edu At validation
+        check('EduAtI').notEmpty()
+                .withMessage('Education At Is Required'),
         //Edu from Validation
         check('EduFromI').notEmpty()
                 .withMessage('Education From Date Is Required'),
@@ -197,7 +198,8 @@ exports.Refvalidate = [
 
         check('RefPhoneI').isMobilePhone()
                 .withMessage('Reff Mobile Number Is Wrong'),
-
+        check('RefAtI').notEmpty()
+                .withMessage('Reff At Is Required'),
         check('RefCvI').notEmpty()
                 .withMessage('Reff Cv is required'),
 

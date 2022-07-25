@@ -1,6 +1,7 @@
 const SessionModel = require('../../../../models/mn/Meet/MeetSession')
 const MeetModel = require('../../../../models/mn/MnMeetSchema')
 const MnSessionAttachmentModel = require('../../../../models/mn/Session/SessionAttachment')
+const MnRequestModel = require('../../../../models/mn/MnRequestSchema')
 const facades = require('../../../../others/facades')
 const population = require('../../../../others/populations')
 module.exports.Save = function (req, res) {
@@ -34,19 +35,25 @@ module.exports.Save = function (req, res) {
                         result2.MeetSession.push(result._id)
                         result2.save();
 
-                        //trigger user 
-                        var io = req.app.get('socketio');
-                        io.to(result2.MeetRequest.ReqUser.toString()).emit('SESSION_CREATED', {})
+                        //get request
+                        MnRequestModel.findById(result2.MeetRequest._id,function(err3,result3){
 
-                        //get user and send notif to it
-                        facades.saveNotif('user', result2.MeetRequest.ReqUser, 'RedirectToSession', 'Your Meet Session Is Ready Please Enter Classroom')
+                            //trigger user 
+                            var io = req.app.get('socketio');
+                            io.to(result2.MeetRequest.ReqUser.toString()).emit('SESSION_CREATED',result3)
+    
+                            //get user and send notif to it
+                            facades.saveNotif('user', result3.ReqUser, 'RedirectToSession', 'Your Meet Session Is Ready Please Enter Classroom',true,io)
+    
+    
+                            return res.json({
+                                success: true,
+                                payload: result3,
+                                message: 'Session Successfully created'
+                            })
 
+                        }).populate(population.RequestPopulation)
 
-                        return res.json({
-                            success: true,
-                            payload: result,
-                            message: 'Session Successfully created'
-                        })
                     }
                     else {
                         return res.json({

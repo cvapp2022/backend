@@ -54,8 +54,10 @@ exports.NewPost = function (req, res) {
         saveTemplate.save(function (err, result) {
             if(!err){
 
+                var io = req.app.get('socketio');
+
                 //send notification to all users 
-                facades.saveNotif('userall','','RedirectToCv','Check New Cv Template '+result.TemplateName)
+                facades.saveNotif('userall','','RedirectToCv','Check New Cv Template '+result.TemplateName,true,io)
 
                 //trigger user 
                 var io=req.app.get('socketio');

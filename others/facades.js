@@ -182,7 +182,7 @@ exports.googleAuth = function () {
     //client secret
     const CLIENT_SECRET = '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';
 
-    const REFRESH_TOKEN = '1//04HANCChxx1I7CgYIARAAGAQSNwF-L9IrejY3Vx4p1Eaq970AuZnpxHSGBEzQuO2Po-G6qwxakW16crbKrENeXTl73JFI1-kMvFE';
+    const REFRESH_TOKEN = '1//04lf_f8ZNFHX9CgYIARAAGAQSNwF-L9IraL0o-N_v34RY4Qfa7m0hvm2G40lwpWsFzVycLOHOFD6uSqm5LrMkkH5WnEqwirsnopo';
 
     const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 
@@ -323,7 +323,7 @@ exports.createFolder = function (name, to, callback) {
     }
 }
 
-exports.saveNotif = function (to, targetId, action, message,push) {
+exports.saveNotif = function (to, targetId, action, message,push,io) {
 
     if (to === 'mentor') {
         var saveNotif = new MentorNotif();
@@ -348,6 +348,10 @@ exports.saveNotif = function (to, targetId, action, message,push) {
                     if (!err2) {
                         result2.MentorNotif.push(result._id);
                         result2.save();
+
+                        if(push){
+                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_MENTOR',result)
+                        }
                     }
                 })
             }
@@ -356,12 +360,18 @@ exports.saveNotif = function (to, targetId, action, message,push) {
                     if (!err2) {
                         result2.UserNotif.push(result._id);
                         result2.save();
+                        console.log(result2)
+                        if(push){
+                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_USER',result)
+                        }
                     }
                 })
             }
             else if(to === 'userall'){
                 UserModel.updateMany({},{$push:{UserNotif:result}},{},function(err3,result3){
-                    console.log(result3)
+                    if(push){
+                        io.emit('NOTIFICATION_SENT_TO_ALL_USERS',result)
+                    }
                 })
             }
         }

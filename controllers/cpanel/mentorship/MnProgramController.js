@@ -64,12 +64,13 @@ module.exports.SavePost = function (req, res) {
                                     item.save();
                                 })
                             })
+                            var io = req.app.get('socketio');
                             //send notifiacation to user
-                            facades.saveNotif('userall','','RedirectToProgram','Check New Program '+result2.ProgName)
+                            facades.saveNotif('userall','','RedirectToProgram','Check New Program '+result2.ProgName,true,io)
                             
                             //send socket to all users to update program
                             var io=req.app.get('socketio');
-                            io.emit('PROGRAM_CREATED',{})
+                            io.emit('PROGRAM_CREATED',result2)
 
                             return res.send('Program saved');
                         })
@@ -154,8 +155,9 @@ module.exports.addMentorToProg = function (req, res) {
                 mentor.MentorPrograms.push(program._id)
                 mentor.save();
 
+                var io = req.app.get('socketio');
                 //send notification 
-                facades.saveNotif('mentor',mentorId,'RedirectToPrograms','your account Added to '+program.ProgName+' mentorship program',true)
+                facades.saveNotif('mentor',mentorId,'RedirectToPrograms','your account Added to '+program.ProgName+' mentorship program',true,io)
                 //trigger mentor 
                 var io=req.app.get('socketio');
                 io.to(mentorId).emit('MENTOR_ADDED_TO_PROGRAM') 
@@ -192,8 +194,9 @@ module.exports.removeMentorFromProg = function (req, res) {
                 mentor.MentorPrograms.pull(program._id)
                 mentor.save();
 
+                var io = req.app.get('socketio');
                 //send notification
-                facades.saveNotif('mentor',mentorId,'RedirectToPrograms','your account Removed From '+program.ProgName+' mentorship program',true)
+                facades.saveNotif('mentor',mentorId,'RedirectToPrograms','your account Removed From '+program.ProgName+' mentorship program',true,io)
 
                 //trigger mentor
                 var io=req.app.get('socketio');
