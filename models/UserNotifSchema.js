@@ -9,6 +9,7 @@ const UserNotifModel = new Schema({
     NotifSeen:{type:Boolean,default:false},
     NotifAction:{type:String,required:true},
     NotifMessage:{type:String,required:true},
+    NotifValues:{type:Object,default:{}},
     NotifUser:{type:mongoose.Schema.Types.ObjectId, ref: 'BLCVUser'},
 },{ timestamps: true })
 

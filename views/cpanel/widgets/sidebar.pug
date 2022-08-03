@@ -39,6 +39,23 @@ nav#sidebar.font-weight-normal
           ul#categoryCollapse.collapse.list-unstyled
            li
               a(href='/Cpanel/Blog/Cat/new') Add Category 
+    li
+      a.dropdown-toggle(href='#repoCollapse' data-toggle='collapse' aria-expanded='false') Repositories
+      ul#repoCollapse.collapse.list-unstyled
+        li
+          a.dropdown-toggle(href='#skillRepoCollapse' data-toggle='collapse' aria-expanded='false') skills
+          ul#skillRepoCollapse.collapse.list-unstyled
+            li
+              a(href="/Cpanel/Repo/Skill/list") Skills List
+            li 
+              a(href="/Cpanel/Repo/Skill/new")  add Skill
+        li
+          a.dropdown-toggle(href='#positionRepoCollapse' data-toggle='collapse' aria-expanded='false') Positions
+          ul#positionRepoCollapse.collapse.list-unstyled
+            li
+              a(href="/Cpanel/Repo/position/list") Positions List
+            li 
+              a(href="/Cpanel/Repo/position/new")  add Position
 style.
   /* ---------------------------------------------------
     SIDEBAR STYLE

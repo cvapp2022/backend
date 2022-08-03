@@ -1,7 +1,7 @@
 extends ../../../layout
 
 block style
-    link(rel="stylesheet" href="http://127.0.0.1:5000/dropzone/dropzone.min.css")
+    link(rel="stylesheet" href="/dropzone/dropzone.min.css")
 block content
     h4  Preparation one Page
     .row 
@@ -13,7 +13,7 @@ block content
 
 
 block script
-    script(src="http://127.0.0.1:5000/dropzone/dropzone.min.js")
+    script(src="/dropzone/dropzone.min.js")
     script.
         let myDropzone = new Dropzone("form#upload-en", { 
             url: "/Cpanel/Mentorship/Programs/#{progId}/preparation/#{prep._id}/upload/en",

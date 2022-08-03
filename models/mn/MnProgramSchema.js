@@ -4,13 +4,14 @@ const Schema = mongoose.Schema;
 
 const MnProgramModel = new Schema({ 
     ProgName:{type:String,required:true},
-    ProgStatus:{type:Number,default:1},
+    ProgStatus:{type:Number,default:0},
     ProgDesc:{type:String,required:true},
     ProgImg:{type:String,default:process.env.PROGRAM_THUMBNAIL_DEFAULT},
     ProgMeetsNum:{type:Number,default:1},
     ProgFolder:{type:String,required:true},
     ProgPreparation:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnProgramPrepartion'}],
     ProgMentors:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMentor'}],
+    ProgChilds:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnProgramChild'}]
     //ProgMeets:[{type: mongoose.Schema.Types.ObjectId, ref: 'MnMeet'}], 
 })
 

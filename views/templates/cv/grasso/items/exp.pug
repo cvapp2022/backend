@@ -1,6 +1,7 @@
-.expOne.px-5.l-border
-    h4.font-weight-bolder=exp.ExpJob
-    div 
-        p=exp.ExpTitle  
+.expOne.my-5(class=side=== "side" ? "" : "l-border")
+    div(class=side=== "side" ? "pr-6" : "pl-6")
+        h4.font-weight-bolder=exp.ExpJob
+        div 
+            p=exp.ExpTitle  
             span   | 2020-2021
-    p!=exp.ExpDesc
+        p!=exp.ExpDesc

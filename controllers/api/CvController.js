@@ -141,12 +141,12 @@ exports.Save = function (req, res, next) {
 
 
 
-exports.Update = function (req, res) {
+exports.Update = async function (req, res) {
 
     //validate Inputs 
     const errors = validationResult(req);
     if (errors.errors.length > 0) {
-        res.json({
+        return res.json({
             success: false,
             payload: errors.errors,
             msg: 'Validation Error'
@@ -161,24 +161,40 @@ exports.Update = function (req, res) {
             msg: 'Param not valid'
         });
     }
-
+    // positionI: "",
+    // addressI: "",
+    // fullNameI: "",
+    // profileI: "",
+    console.log(req.body)
     var Update = {
-        CVName: req.body.CvNameI
+        CVName: req.body.CvNameI,
+        CVFullName:req.body.fullNameI,
+        CVProfile:req.body.profileI,
+        CVAddress:req.body.addressI,
+        CVPosition:req.body.positionI['value'],
     }
 
-    CvModel.findOneAndUpdate({ _id: CvId }, Update, function (err, result) {
-
-        if (!err && result) {
-            console.log('updated')
-            res.send('CV Updated')
-        }
-        else {
-            res.send('unable to find cv')
-        }
-
+    await CvModel.findOneAndUpdate({ _id: CvId }, Update)
+    .then((result)=>{
+        //console.log(result)
+        return res.json({
+            success:true,
+            payload:null,
+            message:'Cv Successfully Updated' 
+        });
     })
-
-    res.send('Update cv')
+    .catch((err)=>{
+        return res.json({
+            success: false,
+            payload: err,
+            msg: 'Unable to update Cv'
+        });
+     })
+    // if (!err && result) {
+    //     console.log('updated')
+    // }
+    // else {
+    // }
 
 }
 
@@ -463,7 +479,7 @@ exports.AddSection = function (req, res) {
             //check section is unique
             var oldMainSections = result.CvSections.main
             var oldSideSections = result.CvSections.side
-            var oldSections=[oldMainSections,oldSideSections].flat();
+            var oldSections = [oldMainSections, oldSideSections].flat();
             oldSections.find((item) => {
                 if (item.name === req.body.SectionNameI) {
                     return res.json({
@@ -473,7 +489,7 @@ exports.AddSection = function (req, res) {
                     });
                 }
             });
-            
+
             var newSection = { name: req.body.SectionNameI }
             var combineSections = [
                 oldMainSections,
@@ -481,12 +497,12 @@ exports.AddSection = function (req, res) {
             ]
             var newMainSections = combineSections.flat();
 
-            result.CvSections = {'main':newMainSections,'side':oldSideSections};
+            result.CvSections = { 'main': newMainSections, 'side': oldSideSections };
             result.save(function (err2, result2) {
 
-            //trigger user 
-            var io = req.app.get('socketio');
-            io.to(req.user._id.toString()).emit('SECTION_UPDATED', {})
+                //trigger user 
+                var io = req.app.get('socketio');
+                io.to(req.user._id.toString()).emit('SECTION_UPDATED', {})
 
                 if (!err2 && result2) {
                     return res.json({
@@ -547,9 +563,9 @@ exports.RemoveSection = function (req, res) {
                     newSections.push(item);
                 }
             })
-            result.CvSections=newSections;
-            result.save(function(err2,result2){
-                if(!err2 && result2){
+            result.CvSections = newSections;
+            result.save(function (err2, result2) {
+                if (!err2 && result2) {
                     return res.json({
                         success: true,
                         payload: result2,
@@ -572,9 +588,9 @@ exports.RemoveSection = function (req, res) {
 }
 
 
-exports.SetTemplate=function(req,res){
+exports.SetTemplate = function (req, res) {
 
-    
+
     //validate param 
     var CvId = new ObjectId(req.params.cvId);
     if (!ObjectId.isValid(req.params.cvId)) {
@@ -584,9 +600,9 @@ exports.SetTemplate=function(req,res){
             msg: 'Param not valid'
         });
     }
-    
+
     //validate input
-    var newTemplate=req.body.TemplateIdI;
+    var newTemplate = req.body.TemplateIdI;
     if (!newTemplate || !ObjectId.isValid(newTemplate)) {
         return res.json({
             success: false,
@@ -595,9 +611,9 @@ exports.SetTemplate=function(req,res){
         });
     }
 
-    CvModel.findOneAndUpdate({ _id:CvId},{CVTemplate:newTemplate},function(err,result){
+    CvModel.findOneAndUpdate({ _id: CvId }, { CVTemplate: newTemplate }, function (err, result) {
 
-        if(!err && result){
+        if (!err && result) {
             return res.json({
                 success: true,
                 payload: result,
@@ -609,7 +625,7 @@ exports.SetTemplate=function(req,res){
 
 
 
-exports.Render=function(req,res){
+exports.Render = function (req, res) {
 
     //validate param 
     var CvId = new ObjectId(req.params.cvId);
@@ -621,24 +637,26 @@ exports.Render=function(req,res){
         });
     }
 
-    CvModel.findOne({_id:CvId},function(err,result){
-        return res.render('templates/cv/'+result.CVTemplate.TemplateName,{cv:result},
-        ((err,html)=>{
-            var options = { 
-                format:"A4",
-                border:0,
-                paginationOffset: 1,
-                type:'pdf',
-            }
-            pdf.create(html, options).toBuffer(function(err, buffer){
+    CvModel.findOne({ _id: CvId }, function (err, result) {
+        console.log(err)
+        return res.render('templates/cv/' + result.CVTemplate.TemplateName, { cv: result },
+            ((err, html) => {
                 console.log(err)
-              res.set({
-                "Content-Type":"application/pdf",
-                "Content-Disposition": "attachment; filename=test.pdf"
-              });
-              res.end(buffer)
-            });
-          })
+                var options = {
+                    format: "A4",
+                    border: 0,
+                    paginationOffset: 1,
+                    type: 'pdf',
+                }
+                pdf.create(html, options).toBuffer(function (err, buffer) {
+                    console.log(err)
+                    res.set({
+                        "Content-Type": "application/pdf",
+                        "Content-Disposition": "attachment; filename=test.pdf"
+                    });
+                    res.end(buffer)
+                });
+            })
         )
     }).populate(population.CvPopulate)
 }

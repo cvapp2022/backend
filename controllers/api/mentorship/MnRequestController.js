@@ -23,7 +23,7 @@ module.exports.Get = async function (req, res) {
                 programsArr = result.MentorPrograms;
             }
         })
-        query = { ReqProg: { $in: programsArr } };
+        query = { ReqProg: { $in: programsArr },ReqState:{$in:['searching','applied','active']}};
     }
 
     //get requests dates 
@@ -90,6 +90,12 @@ module.exports.Save = function (req, res) {
                                 }
                             })
                             MnRequestModel.populate(result3, populate.RequestPopulation, function (err5, result5) {
+
+                            //trigger user 
+                            var io = req.app.get('socketio');
+                            facades.saveNotif('user', userId, 'RedirectToRequests', 'notifRequestRegisterd',{}, true, io)
+
+                                
                                 return res.json({
                                     success: true,
                                     payload: result5,
@@ -147,7 +153,7 @@ module.exports.Update = function (req, res) {
             if (result.ReqState === 'applied' && result.ReqState === 'active') {
 
                 var io = req.app.get('socketio');
-                facades.saveNotif('mentor', result.ReqMentor, 'RedirectToRequest', 'user updated mentorship request', true, io)
+                facades.saveNotif('mentor', result.ReqMentor, 'RedirectToRequest', 'user updated mentorship request',{}, true, io)
             }
 
             return res.json({
@@ -175,7 +181,7 @@ module.exports.Pay = function (req, res) {
 
                     //trigger user 
                     var io = req.app.get('socketio');
-                    facades.saveNotif('user', user._id, 'RedirectToRequests', 'Request Successfully Paid', true, io)
+                    facades.saveNotif('user', user._id, 'RedirectToRequests', 'notifRequestPaid',{}, true, io)
 
                     return res.json({
                         success: true,
@@ -256,6 +262,8 @@ module.exports.Apply = async function (req, res) {
                 result.save();
                 //generate Meets
                 var meetsCount = appliedRequest.ReqProg.ProgMeetsNum;
+                //get prepare 
+                var preparations=appliedRequest.ReqProg.ProgPreparation;
                 var meetsArr = [];
                 for (let i = 0; i < meetsCount; i++) {
                     var random = (Math.random() + 1).toString(36).substring(4);
@@ -263,7 +271,8 @@ module.exports.Apply = async function (req, res) {
                         MeetName: 'luccter ' + i + 1,
                         MeetId: random,
                         MeetMentor: result._id,
-                        MeetRequest: appliedRequest._id
+                        MeetRequest: appliedRequest._id,
+                        MeetPrepare:preparations[i]
                     };
                     meetsArr.push(obj)
                 }
@@ -283,7 +292,7 @@ module.exports.Apply = async function (req, res) {
 
                                 var io = req.app.get('socketio');
                                 //push notification 
-                                facades.saveNotif('user', appliedRequest.ReqUser._id, 'RedirectToRequests', 'mentor ' + result.MentorName + ' applied your mentorship request', true, io)
+                                facades.saveNotif('user', appliedRequest.ReqUser._id, 'RedirectToRequests', 'notifRequestApplied',{mentorName:result.MentorName}, true, io)
                                 //trigger user 
                                 io.to(appliedRequest.ReqUser._id.toString()).emit('REQUEST_APPLIED', result5)
                                 return res.json({

@@ -1,6 +1,11 @@
-.reffrences-section.mb-4.text-end
-    .mb-4.d-flex.flex-column.align-items-end
+.reffrences-section
+    .mt-4
         h4 Reffrencess
         .b-section-h        
-        for reff in cv.CVReff
-            include ../items/reff
+        div 
+            for reff in cv.CVReff
+                include ../items/reff
+if side ==='main'
+    .b-section
+    .b-border 
+    .b-section.mb-4

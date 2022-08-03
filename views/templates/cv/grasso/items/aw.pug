@@ -1,3 +1,7 @@
-.awOne
-    h4.font-weight-bolder=aw.AwTitle
-    p!=aw.AwDesc
+.awOne.my-5(class=side=== "side" ? "" : "l-border")
+    div(class=side=== "side" ? "pr-6" : "pl-6")
+        h4.font-weight-bolder=aw.AwTitle
+        div 
+            p!=aw.AwTitle
+            span   | 2020-2021
+        p!=aw.AwDesc

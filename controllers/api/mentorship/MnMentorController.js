@@ -12,10 +12,12 @@ module.exports.Get = function (req, res) {
 
 
     var u = req.user;
-    res.json({
-        success: true,
-        payload: u,
-        message: 'Mentor Successfully loaded'
+    MentorModel.findById(u._id,function(err,result){
+        res.json({
+            success: true,
+            payload: result,
+            message: 'Mentor Successfully loaded'
+        })
     })
 
 
@@ -68,7 +70,7 @@ module.exports.Login = function (req, res) {
                                 var io = req.app.get('socketio');
 
                                 //push notification to mentor
-                                facades.saveNotif('mentor', result._id, 'RedirectToRequests', 'You Have ' + result2.length + ' Available Requests', true,io)
+                                //facades.saveNotif('mentor', result._id, 'RedirectToRequests', 'You Have ' + result2.length + ' Available Requests', true,io)
 
                             }
                         })
@@ -108,10 +110,5 @@ module.exports.Login = function (req, res) {
             });
         }
     }).lean();
-
-
-
-
-
 
 }

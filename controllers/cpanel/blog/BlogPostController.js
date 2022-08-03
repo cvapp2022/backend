@@ -73,7 +73,7 @@ exports.SaveChildGet = function (req, res) {
     })
 }
 
-exports.SaveChildPost = function (req, res) {
+exports.SaveChildPost = async function (req, res) {
 
     //validate inputs 
     const errors = validationResult(req);
@@ -84,47 +84,54 @@ exports.SaveChildPost = function (req, res) {
     //validate params
 
     //create new folder
-    facades.createFolder(req.body.postTitleI,'posts',function(folderId){
+    var folderId=await facades.createFolder(req.body.postTitleI,'posts')
 
-        //upload post thumbnail to Drive
-        facades.uploadFileTo(req.files.postThumbI[0],'post',folderId,function(x){
-    
-            //get parent and 
-            PostModel.findById(req.params.postId, function (err, result) {
-                if (!err && result) {
-        
-                    //save Child Post
-                    var savePostChild = new PostChildModel();
-                    savePostChild.PostTitle = req.body.postTitleI;
-                    savePostChild.PostDesc = req.body.postDescI;
-                    savePostChild.PostThumb = x;
-                    savePostChild.PostFolder=folderId;
-                    savePostChild.PostState = 'published';
-                    savePostChild.PostBody = req.body.postBodyI;
-                    savePostChild.PostLang = req.params.lang;
-                    savePostChild.PostParent = req.params.postId;
-                    savePostChild.save(function (err2, result2) {
-                        if (!err2 && result2) {
-        
-                            //push child id to parent 
-                            result.PostChild.push(result2._id)
-                            result.save(function (err3) {
-                                if (!err3) {
-                                    return res.redirect('/Cpanel/Blog/Post/' + req.params.postId + '/' + req.params.lang + '/new')
-                                }
-                                else {
-                                    console.log(err)
-                                    return res.redirect('/Cpanel/Blog/Post/' + req.params.postId + '/' + req.params.lang + '/new')
-                                }
-                            })
-        
-                        }
-                    })
-                }
-        
-            }).populate(population.PostPopulate)
-    
+    if(!folderId){
+        return res.json({
+            success: false,
+            payload: null,
+            message: 'unable to create Post folder'
         })
+    }
+
+    //upload post thumbnail to Drive
+    facades.uploadFileTo(req.files.postThumbI[0],'post',folderId,function(x){
+
+        //get parent and 
+        PostModel.findById(req.params.postId, function (err, result) {
+            if (!err && result) {
+    
+                //save Child Post
+                var savePostChild = new PostChildModel();
+                savePostChild.PostTitle = req.body.postTitleI;
+                savePostChild.PostDesc = req.body.postDescI;
+                savePostChild.PostThumb = x;
+                savePostChild.PostFolder=folderId;
+                savePostChild.PostState = 'published';
+                savePostChild.PostBody = req.body.postBodyI;
+                savePostChild.PostLang = req.params.lang;
+                savePostChild.PostParent = req.params.postId;
+                savePostChild.save(function (err2, result2) {
+                    if (!err2 && result2) {
+    
+                        //push child id to parent 
+                        result.PostChild.push(result2._id)
+                        result.save(function (err3) {
+                            if (!err3) {
+                                return res.redirect('/Cpanel/Blog/Post/' + req.params.postId + '/' + req.params.lang + '/new')
+                            }
+                            else {
+                                console.log(err)
+                                return res.redirect('/Cpanel/Blog/Post/' + req.params.postId + '/' + req.params.lang + '/new')
+                            }
+                        })
+    
+                    }
+                })
+            }
+    
+        }).populate(population.PostPopulate)
+
     })
 
 

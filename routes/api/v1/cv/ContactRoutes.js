@@ -27,10 +27,6 @@ router.put('/',auth.validateToken,Validate.ContactValidate,function(req,res){
         CValue:req.body.ContactValI
     }
     ContactModel.findOneAndUpdate({CKey:req.body.ContactNameI,CVId:req.body.CvIdI},update,function(err,result){
-
-        console.log(err)
-        console.log(result)
-
         if(!err && result){
 
             return  res.json({

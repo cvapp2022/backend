@@ -404,6 +404,24 @@ exports.ProgramPreparationValidate = [
                 .withMessage('Perperation Meet  Is required'),
 ]
 
+//start save Skill Repo form Validate
+exports.SkillRepoValidate=[
+
+        check('skillNameI').notEmpty()
+                .withMessage('Skill name Is required'),
+        check('skillDescI').notEmpty()
+                .withMessage('Skill Description Is required'),
+]
+
+//start save position Repo form Validate 
+exports.PositionRepoValidate=[
+
+        check('positionNameI').notEmpty()
+                .withMessage('position name Is required'),
+        check('positionDescI').notEmpty()
+                .withMessage('position Description Is required'),
+]
+
 exports.MessageValidate = [
         check('msgFromI').notEmpty()
                 .withMessage('Message From Is required'),
@@ -412,3 +430,13 @@ exports.MessageValidate = [
         check('msgSenderIdI').notEmpty()
                 .withMessage('Message Sender Is required'),
 ]
+
+exports.MeetRateValidate = [
+        check('RateSelectionI').notEmpty()
+                .withMessage('Rate Selection Is required'),
+        check('RateSelection2I').notEmpty()
+                .withMessage('Rate Selection 2 Is required'),
+        check('RateDescI').notEmpty()
+                .withMessage('Rate Descreption Is required'),
+]
+

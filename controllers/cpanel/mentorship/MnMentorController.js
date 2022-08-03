@@ -7,7 +7,7 @@ module.exports.SaveGet = function (req, res) {
     return res.render('cpanel/mentorship/mentors/new')
 }
 
-module.exports.SavePost = function (req, res) {
+module.exports.SavePost = async function (req, res) {
 
     //validate inputs 
     const errors = validationResult(req);
@@ -20,7 +20,7 @@ module.exports.SavePost = function (req, res) {
     }
 
     //check mentor is unique
-    MnMentorModel.find({ MentorMail: req.body.mentorMailI }, function (err, result) {
+    MnMentorModel.find({ MentorMail: req.body.mentorMailI },async function (err, result) {
 
         if (!err && result.length > 0) {
             return res.status(400).json({
@@ -32,32 +32,37 @@ module.exports.SavePost = function (req, res) {
         else if (!err && result.length === 0 ) {
 
             //updload mentor image
-            facades.createFolder(req.body.mentorNameI, 'mentors', function (folderId) {
-
-                facades.uploadFileTo(req.files.mentorImgI[0], 'mentor', folderId, function (fildId) {
-
-                    //save mentor
-                    var saveMentor = new MnMentorModel();
-                    saveMentor.MentorName = req.body.mentorNameI;
-                    saveMentor.MentorDesc = req.body.mentorDescI
-                    saveMentor.MentorMail = req.body.mentorMailI;
-                    saveMentor.MentorPhone = req.body.mentorPhoneI
-                    saveMentor.MentorPass = saveMentor.encryptPassword(req.body.mentorPassI);
-                    saveMentor.MentorImg = fildId;
-                    saveMentor.MentorFolder = folderId;
-
-                    saveMentor.save(function (err, result) {
-
-                        if (result && !err) {
-                            return res.send('mentor saved');
-                        }
-                        else {
-                            return res.send('Somtign');
-                        }
-
-                    });
-
+            var folderId=await facades.createFolder(req.body.mentorNameI, 'mentors')
+            if(!folderId){
+                return res.json({
+                    success: false,
+                    payload: null,
+                    message: 'unable to create Mentor folder'
                 })
+            }
+            facades.uploadFileTo(req.files.mentorImgI[0], 'mentor', folderId, function (fildId) {
+
+                //save mentor
+                var saveMentor = new MnMentorModel();
+                saveMentor.MentorName = req.body.mentorNameI;
+                saveMentor.MentorDesc = req.body.mentorDescI
+                saveMentor.MentorMail = req.body.mentorMailI;
+                saveMentor.MentorPhone = req.body.mentorPhoneI
+                saveMentor.MentorPass = saveMentor.encryptPassword(req.body.mentorPassI);
+                saveMentor.MentorImg = fildId;
+                saveMentor.MentorFolder = folderId;
+
+                saveMentor.save(function (err, result) {
+
+                    if (result && !err) {
+                        return res.send('mentor saved');
+                    }
+                    else {
+                        return res.send('Somtign');
+                    }
+
+                });
+
             })
         }
         else{

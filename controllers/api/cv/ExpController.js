@@ -47,8 +47,8 @@ exports.Save = function (req, res, next) {
                     ExpModel.find({ CVId: CvId },).populate({ path: 'ExpSkill' }).exec(function (err2, result2) {
                         if (!err2) {
                             return res.status(201).json({
-                                status: true,
-                                items: {
+                                success: true,
+                                payload: {
                                     item: result,
                                     list: result2
                                 }

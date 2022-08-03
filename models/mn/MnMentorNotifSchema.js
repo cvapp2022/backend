@@ -9,6 +9,7 @@ const MentorNotifModel = new Schema({
     NotifSeen:{type:Boolean,default:false},
     NotifAction:{type:String,required:true},
     NotifMessage:{type:String,required:true},
+    NotifValues:{type:Object,default:{}},
     NotifMentor:{type:mongoose.Schema.Types.ObjectId, ref: 'MnMentor'},
 },{ timestamps: true })
 

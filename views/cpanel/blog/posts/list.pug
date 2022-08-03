@@ -1,7 +1,7 @@
 extends ../../layout
 
 block style
-    link(rel="stylesheet" href="http://127.0.0.1:5000/datatables/css/dataTables.bootstrap4.min.css")
+    link(rel="stylesheet" href="/datatables/css/dataTables.bootstrap4.min.css")
 
 block content
     h4 Posts List
@@ -29,8 +29,8 @@ block content
                                 else
                                     a(href="/cpanel/Blog/Post/"+post._id+"/ar/new") +Ar
 block script
-    script(src="http://127.0.0.1:5000/datatables/js/dataTables.bootstrap4.min.js") 
-    script(src="http://127.0.0.1:5000/datatables/js/jquery.dataTables.min.js") 
+    script(src="/datatables/js/dataTables.bootstrap4.min.js") 
+    script(src="/datatables/js/jquery.dataTables.min.js") 
     script.
         $(document).ready(function () {
             $('#example').DataTable();

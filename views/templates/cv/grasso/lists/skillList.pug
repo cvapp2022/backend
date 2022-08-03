@@ -1,4 +1,6 @@
-.skills-section.my-4.pb-4.b-border.w-100
+.skills-section(class=side=== "side" ? "pr-6" : "pl-6")
     p.mb-4.section-title Skills
-    for skill in cv.CVSkill
-        p=skill.SkillTitle
+    .my-4.pb-4
+        for skill in cv.CVSkill
+            p=skill.SkillTitle
+.b-border.mx-6

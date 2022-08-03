@@ -48,11 +48,15 @@ const MnRequestRoutes = require('./routes/api/v1/mn/MnRequestRoutes')
 const MnMentorRoutes = require('./routes/api/v1/mn/MentorRoutes')
 const MnPorgramRoutes = require('./routes/api/v1/mn/ProgramRoutes')
 const MnMeetRoutes = require('./routes/api/v1/mn/MeetRoutes')
-const MnSessionRoutes = require('./routes/api/v1/mn/meet/SessionRoutes')
+const MnMeetSessionRoutes = require('./routes/api/v1/mn/meet/SessionRoutes')
+const MnMeetRateRoutes=require('./routes/api/v1/mn/meet/RateRoutes')
 
 //blog
 const BlogPostRoutes = require('./routes/api/v1/blog/PostRoutes')
 
+//repos
+const RepoSkillRoutes = require('./routes/api/v1/repo/SkillRepoRoutes')
+const RepoPositionRoutes=require('./routes/api/v1/repo/PositionRepoRoutes')
 
 //cpanel routes 
 const CpanelRoutes = require('./routes/cpanel/CpanelRoutes')
@@ -62,9 +66,13 @@ const CMnMentorRoutes = require('./routes/cpanel/CpMnRoutes/MnMentorRoutes')
 const CTemplateRoutes = require('./routes/cpanel/CTemplateRoutes')
 const CBlogCategoryRoutes = require('./routes/cpanel/CpBlogRoutes/BlogCategoryRoutes')
 const CBlogPostRoutes = require('./routes/cpanel/CpBlogRoutes/BlogPostRoutes')
+const CRepoSkillRoutes=require('./routes/cpanel/CpRepoRoutes/RepoSkillRoutes')
+const CRepoPositionRoutes=require('./routes/cpanel/CpRepoRoutes/RepoPositionRoutes')
 
 //sockets 
 const MessageSocket = require('./sockets/mn/MessageSocket')
+
+const facades = require('./others/facades')
 
 const rooms = new Map()
 signalServer.on('discover', (request) => {
@@ -123,12 +131,20 @@ io.on('connection', function (socket) {
     console.log('socket joined')
   })
   
-
+  socket.on('leave',function(data){
+    socket.leave(data.session)
+  })
 
   socket.on('USER_JOIN', function (userId) {
     socket.join(userId)
     console.log('user joind scocket',userId)
     io.to(userId).emit('USER_JOINED')
+  })
+
+  socket.on('CLOSE_SESSION', async function(data){
+    facades.closeSession(data.session,function(meet){
+      io.to(meet.MeetRequest.ReqUser.toString()).emit('SESSION_CLOSED')
+    })
   })
 
 
@@ -184,7 +200,6 @@ app.use('/api/v1/User/', UserRoutes)
 
 app.use('/api/v1/Cl', ClRoutes)
 
-app.use('/api/v1/Cv', CvRoutes)
 app.use('/api/v1/Cv/Exp', ExpRoutes)
 app.use('/api/v1/Cv/Edu', EduRoutes)
 app.use('/api/v1/Cv/Skill', SkillRoutes)
@@ -198,12 +213,18 @@ app.use('/api/v1/Mn/Request', MnRequestRoutes)
 app.use('/api/v1/Mn/Mentor', MnMentorRoutes)
 app.use('/api/v1/Mn/Program', MnPorgramRoutes)
 app.use('/api/v1/Mn/Meet', MnMeetRoutes)
-app.use('/api/v1/Mn/Session', MnSessionRoutes)
+app.use('/api/v1/Mn/Session', MnMeetSessionRoutes)
+app.use('/api/v1/Mn/Rate', MnMeetRateRoutes)
 
 app.use('/api/v1/blog/Post', BlogPostRoutes)
 
+app.use('/api/v1/repo/Skill',RepoSkillRoutes)
+app.use('/api/v1/repo/position',RepoPositionRoutes)
 
 app.use('/api/v1/Validation', ValidationRoutes)
+
+app.use('/api/v1/Cv', CvRoutes)
+
 
 
 app.use('/Cpanel', CpanelRoutes)
@@ -213,7 +234,8 @@ app.use('/Cpanel/Mentorship/Mentors', CMnMentorRoutes)
 app.use('/Cpanel/Templates', CTemplateRoutes)
 app.use('/Cpanel/Blog/Cat', CBlogCategoryRoutes)
 app.use('/Cpanel/Blog/Post', CBlogPostRoutes)
-
+app.use('/Cpanel/Repo/Skill',CRepoSkillRoutes)
+app.use('/Cpanel/Repo/Position',CRepoPositionRoutes)
 
 //Server
 httpServer.listen(port, () => {

@@ -1,0 +1,23 @@
+extends ../../layout
+
+block style
+    style.
+        .del-btn{
+            width: 24px;
+            height: 24px;
+            background: #0000007a;
+            border: 0;
+            border-radius: 50%;
+            color: white;
+            font-weight: bolder;
+            text-align: center;
+        }
+
+block content
+    h4 new skill list
+    for skill in skills 
+        .badge.badge-primary.m-1.p-3.text-center=skill.SkillName
+            a(href="#").del-btn.mx-1 x
+
+
+

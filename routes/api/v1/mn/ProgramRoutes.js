@@ -7,6 +7,6 @@ const auth = require('../../../../others/auth');
 var router = express.Router();
 
 
-router.get('/',auth.validateToken,ProgramController.Get);
+router.get('/:lang',auth.validateToken,ProgramController.Get);
 
 module.exports = router;  

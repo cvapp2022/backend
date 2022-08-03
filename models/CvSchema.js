@@ -7,6 +7,10 @@ const Schema = mongoose.Schema;
 
 const CvModel = new Schema({
     CVName: { type: String, required: true },
+    CVFullName:{type:String,default:''},
+    CVProfile:{type:String,default:''},
+    CVAddress:{type:String,default:''},
+    CVPosition:{type: mongoose.Schema.Types.ObjectId,ref:'BLRepoPosition'},
     CVUId: { type: mongoose.Schema.Types.ObjectId, ref: 'BLCVUser', required: true },
     CVTemplate: { type: mongoose.Schema.Types.ObjectId, ref: 'BLCVTemplate', required: true, },
     CVExp: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BLCVExp' }],

@@ -50,6 +50,9 @@ exports.UserPopulate = [{
         {
             path: 'CVImg'
         },
+        {
+            path:'CVPosition'
+        }
     ]
 },
 {
@@ -78,6 +81,9 @@ exports.UserPopulate = [{
                             }
                         ]
                     },
+                    {
+                        path:'MeetPrepare'
+                    }
 
                 ]
 
@@ -105,7 +111,8 @@ exports.RequestPopulation = [
     {
         path: 'ReqMeets',
         populate:
-            [{
+        [
+            {
                 path: 'MeetSession',
                 populate:[
                     {
@@ -114,8 +121,12 @@ exports.RequestPopulation = [
                     {
                         path:'SessionAttachments'
                     }
-            ]
-            }]
+                ]
+            },
+            {
+                path:'MeetPrepare'
+            }
+        ]
     }
 ];
 
@@ -123,9 +134,12 @@ exports.ProgramPopulation = [
     {
         path: 'ProgMentors'
     },
-    // {
-    //     path:'ProgMeets'
-    // }
+    {
+        path:'ProgPreparation'
+    },
+    {
+        path:'ProgChilds'
+    }
 ]
 
 exports.MentorPopulation = [
@@ -188,6 +202,9 @@ exports.CvPopulate = [
     },
     {
         path: 'CVImg'
+    },
+    {
+        path:'CVPosition'
     }
 
 ]

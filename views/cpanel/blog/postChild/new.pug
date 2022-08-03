@@ -16,9 +16,9 @@ block content
         .form-group 
             input(type='submit').btn.btn-primary
 block script 
-    script( src="http://127.0.0.1:5000/tinymce/tinymce.min.js")
+    script( src="/tinymce/tinymce.min.js")
     script.
-        tinyMCE.baseURL = "http://127.0.0.1:5000/tinymce";
+        tinyMCE.baseURL = "/tinymce";
         tinyMCE.suffix='.min';
         tinyMCE.init({
             selector: 'textarea#tinymce'

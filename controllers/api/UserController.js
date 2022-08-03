@@ -5,6 +5,7 @@ const axios = require('axios')
 const UserModel = require('../../models/UserSchema');
 const facades = require('../../others/facades');
 const auth = require('../../others/auth');
+const { UserPopulate } = require('../../others/populations');
 
 
 
@@ -70,9 +71,7 @@ exports.Save= function(req,res,next){
 
                     //trigger user 
                     var io = req.app.get('socketio');
-                                            
-
-                    facades.saveNotif('user',result2._id,'RedirectToDashboard','Your Account Successfully Registerd',false,io)
+                    facades.saveNotif('user',result2._id,'RedirectToDashboard','notifUserRegister',{},false,io)
 
                     return res.json({
                         success:true,
@@ -186,7 +185,13 @@ exports.loginGoogle=function(req,res,next){
                 //res.send(result) 
                 if(!err3 && result ){
                     var token = auth.generateToken(result.toJSON())
-                    return res.send(token);
+                    UserModel.populate(result,UserPopulate,function(err2,result2){
+                        return res.json({
+                            success:true,
+                            payload:{token,user:result2},
+                            message:'Loggedin With google Success' 
+                        });
+                    })
                 }
                 else{
 
@@ -209,12 +214,15 @@ exports.loginGoogle=function(req,res,next){
                         SaveUser.CVUserPass=SaveUser.encryptPassword(password);
                         SaveUser.save(function(err3,result2){
                             if(!err3 && result2){
+                                var io = req.app.get('socketio');
+                                facades.saveNotif('user',result2._id,'RedirectToDashboard','notifUserRegister',{},false,io)
+    
                                 facades.GetUser(result2._id,true,function(x){
 
                                     var token=auth.generateToken(result2.toJSON())
                                     return res.json({
                                         success:true,
-                                        payload:{token,x},
+                                        payload:{token,user:x},
                                         message:'User Successfully registerd with google'
                                     })
                  
@@ -250,7 +258,7 @@ exports.loginGithub=function(req,res,next){
       }).then(function(resp){
 
         const parsedData = queryString.parse(resp.data);
-        console.log(parsedData.access_token); 
+        console.log('ttt',parsedData)
         axios({
             url: 'https://api.github.com/user/emails',
             method: 'get',
@@ -265,7 +273,13 @@ exports.loginGithub=function(req,res,next){
                 //res.send(result) 
                 if(!err3 && result ){
                     var token = auth.generateToken(result.toJSON())
-                    return res.send(token);
+                    UserModel.populate(result,UserPopulate,function(err2,result2){
+                        return res.json({
+                            success:true,
+                            payload:{token,user:result2},
+                            message:'Loggedin With Github Success' 
+                        });
+                    })
                 }
                 else{
 
@@ -354,11 +368,13 @@ exports.loginLinkedin=function(req,res,next){
                 //res.send(result) 
                 if(!err3 && result ){
                     var token = auth.generateToken(result.toJSON())
-                    return res.json({
-                        success:true,
-                        payload:token,
-                        message:'Loggedin With Linked-in Success' 
-                    });
+                    UserModel.populate(result,UserPopulate,function(err2,result2){
+                        return res.json({
+                            success:true,
+                            payload:{token,user:result2},
+                            message:'Loggedin With Linked-in Success' 
+                        });
+                    })
                     //return res.send(token);
                 }
                 else{
@@ -382,12 +398,21 @@ exports.loginLinkedin=function(req,res,next){
                         SaveUser.CVUserPass=SaveUser.encryptPassword(password);
                         SaveUser.save(function(err3,result2){
                             if(!err3 && result2){
-                                var token = auth.generateToken(result2.toJSON());
+
+                            //trigger user 
+                            var io = req.app.get('socketio');
+                            facades.saveNotif('user',result2._id,'RedirectToDashboard','notifUserRegister',{},false,io)
+
+                            var token = auth.generateToken(result2.toJSON());
+                            
+                            UserModel.populate(result2,UserPopulate,function(err4,result3){
                                 return res.json({
                                     success:true,
-                                    payload:token,
+                                    payload:{token,user:result3},
                                     message:'registerd With Linked-in Success' 
                                 });
+                            })
+
                              
                             }
                         })

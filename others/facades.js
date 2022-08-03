@@ -5,6 +5,7 @@ const SkillModel = require('../models/cv/SkillSchema');
 const UserModel = require('../models/UserSchema');
 const MentorModel = require('../models/mn/MnMentorSchema')
 const MnMeetModel = require('../models/mn/MnMeetSchema')
+const SessionModel = require('../models/mn/Meet/MeetSession')
 const UserNotif = require('../models/UserNotifSchema')
 const MentorNotif = require('../models/mn/MnMentorNotifSchema')
 const population = require('./populations')
@@ -177,14 +178,14 @@ exports.googleAuth = function () {
 
 
     //client id
-    const CLIENT_ID = '460388232750-4ppr2ilvejsqjbaj5qvulajkd62l8fpb.apps.googleusercontent.com'
+    const CLIENT_ID =process.env.GOOGLE_DRIVE_CLI_ID
 
     //client secret
-    const CLIENT_SECRET = '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';
+    const CLIENT_SECRET = process.env.GOOGLE_DRIVE_CLI_SECERET;
 
-    const REFRESH_TOKEN = '1//04lf_f8ZNFHX9CgYIARAAGAQSNwF-L9IraL0o-N_v34RY4Qfa7m0hvm2G40lwpWsFzVycLOHOFD6uSqm5LrMkkH5WnEqwirsnopo';
+    const REFRESH_TOKEN = process.env.GOOGLE_DRIVE_CLI_REFRESH;
 
-    const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+    const REDIRECT_URI = process.env.GOOGLE_DRIVE_CLI_REDIRECT_URL;
 
     const oauth2Client = new google.auth.OAuth2(
         CLIENT_ID,
@@ -235,7 +236,7 @@ exports.uploadFileTo = async function (file, to, folderId, callback) {
     const drive = google.drive({
         version: 'v3',
         auth: oauth2Client,
-    });
+    })
 
 
     const bufferStream = new stream.PassThrough();
@@ -272,15 +273,15 @@ exports.uploadFileTo = async function (file, to, folderId, callback) {
             .catch((err) => {
                 callback(dfile)
                 console.log('error from saving file', err)
-                callback(dfile)
             });
 
     } catch (error) {
+        callback(dfile)
         console.log(error)
     }
 }
 
-exports.createFolder = function (name, to, callback) {
+exports.createFolder = function (name, to) {
 
     let pfolder;
     if (to === 'posts') {
@@ -306,24 +307,24 @@ exports.createFolder = function (name, to, callback) {
         version: 'v3',
         auth: oauth2Client,
     });
-
-    try {
-        drive.files.create({
+        return drive.files.create({
             fields: 'id',
             resource: {
                 'name': name,
                 'parents': [pfolder],
                 'mimeType': 'application/vnd.google-apps.folder',
             }
-        }).then((resp) => {
-            callback(resp.data.id)
         })
-    } catch (error) {
-        throw error;
-    }
+        .then((resp) => {
+            return resp.data.id
+        }).catch((error)=>{
+            console.log(error)
+            return null
+        })
 }
 
-exports.saveNotif = function (to, targetId, action, message,push,io) {
+exports.saveNotif = function (to, targetId, action, message, values = {}, push, io) {
+
 
     if (to === 'mentor') {
         var saveNotif = new MentorNotif();
@@ -333,15 +334,18 @@ exports.saveNotif = function (to, targetId, action, message,push,io) {
         var saveNotif = new UserNotif();
         saveNotif.NotifUser = targetId;
     }
-    else if(to ==='userall'){
+    else if (to === 'userall') {
         var saveNotif = new UserNotif();
     }
 
     saveNotif.NotifAction = action;
     saveNotif.NotifMessage = message;
+    saveNotif.NotifValues = values;
     saveNotif.save(function (err, result) {
 
         if (!err && result) {
+
+
             //push notif to target 
             if (to === 'mentor') {
                 MentorModel.findById(targetId, function (err2, result2) {
@@ -349,8 +353,9 @@ exports.saveNotif = function (to, targetId, action, message,push,io) {
                         result2.MentorNotif.push(result._id);
                         result2.save();
 
-                        if(push){
-                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_MENTOR',result)
+
+                        if (push) {
+                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_MENTOR', result)
                         }
                     }
                 })
@@ -361,19 +366,43 @@ exports.saveNotif = function (to, targetId, action, message,push,io) {
                         result2.UserNotif.push(result._id);
                         result2.save();
                         console.log(result2)
-                        if(push){
-                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_USER',result)
+                        if (push) {
+                            io.to(result2._id.toString()).emit('NOTIFICATION_SENT_TO_USER', result)
                         }
                     }
                 })
             }
-            else if(to === 'userall'){
-                UserModel.updateMany({},{$push:{UserNotif:result}},{},function(err3,result3){
-                    if(push){
-                        io.emit('NOTIFICATION_SENT_TO_ALL_USERS',result)
+            else if (to === 'userall') {
+                UserModel.updateMany({}, { $push: { UserNotif: result } }, {}, function (err3, result3) {
+                    if (push) {
+                        io.emit('NOTIFICATION_SENT_TO_ALL_USERS', result)
                     }
                 })
             }
         }
     });
+}
+
+
+exports.closeSession = function (session, callback) {
+
+    //do 
+    //found and upadate session
+    var update = {
+        isActive: false
+    }
+    SessionModel.findOneAndUpdate({ SessionId: session }, update, function (err, result) {
+        if (!err && result) {
+            //find user
+            MnMeetModel.findById(result.SessionMeet, function (err2, result2) {
+                //update meet Status
+                result2.MeetStatus = 1;
+                result2.save(function (err3) {
+                    if (!err3) {
+                        callback(result2)
+                    }
+                })
+            }).populate([{ path: 'MeetRequest' }])
+        }
+    })
 }

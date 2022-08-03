@@ -1,17 +1,49 @@
+html { 
+    print-color-adjust:exact;
+    -webkit-print-color-adjust: exact;
+}
+.h4, .h5, .h6, h4, h5, h6 {
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
 .b-border{
     border-bottom:1px black solid
 }
 .b-section{
     width: 50px;
     height: 1px;
-    background-color: black;
+    background-color: black!important;
 }
 .b-section-h{
     width: 50px;
     height: 2px;
-    background-color: black;
+    background-color: black!important;
 }
 
 .text-end{
     text-align: end;
+}
+.d-flex{
+    display: -webkit-box !important;
+    display: -webkit-flex !important;
+    display: flex;
+}
+.flex-wrap{
+    -webkit-flex-wrap: wrap !important;
+    flex-wrap: wrap;
+}
+.flex-nowrap{
+    -webkit-flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
+}
+.flex-column{
+    -webkit-flex-direction:column;
+    flex-direction: column;
+    
+}
+.align-items-end{
+    -webkit-align-items:flex-end;
+    align-items:flex-end;
+    /* -webkit-box-align: end; */
+    
 }
