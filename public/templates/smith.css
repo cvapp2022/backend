@@ -1,7 +1,4 @@
-p{
-    margin: 0;
-    font-size: 12px;
-}
+/* 
 .profile-section h4, .experience-section h4 , .details-section h4 ,.skills-section h4, .languages-section h4 , .education-section h4 {
     color: #18beff;
 }
@@ -10,4 +7,23 @@ p{
 }
 .data{
     color: gray;
+} */
+
+
+p{
+    margin: 0 !important;
+}
+.h4, .h5, .h6, h4, h5, h6 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+.details-item{
+    width:30%;
+}
+.section-title , .item-title{
+    font-weight: bold !important;
+}
+.date{
+    font-size: 12px !important;
+    font-style: oblique;
 }

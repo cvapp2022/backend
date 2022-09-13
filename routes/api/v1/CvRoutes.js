@@ -28,6 +28,9 @@ router.put('/:cvId/removeSection',auth.validateToken,CvController.RemoveSection)
 
 router.put('/:cvId/setTemplate',auth.validateToken,CvController.SetTemplate)
 
+router.put('/:cvId/setLang',auth.validateToken,CvController.SetLang)
+
 router.get('/:cvId/render',CvController.Render)
+
 
 module.exports = router;

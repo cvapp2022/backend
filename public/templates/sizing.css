@@ -54,6 +54,13 @@
 .mx-6 { margin-right:5rem!important;margin-left:5rem!important; }
 .my-6 { margin-top:5rem!important;margin-bottom:5rem!important; }
 
+.mt-7 { margin-top:10rem!important; }
+.mr-7 { margin-right:10rem!important; }
+.mb-7 { margin-bottom:10rem!important; }
+.ml-7 { margin-left:10rem!important; }
+.mx-7 { margin-right:10rem!important;margin-left:10rem!important; }
+.my-7 { margin-top:10rem!important;margin-bottom:10rem!important; }
+
 .mt-auto { margin-top:auto!important; }
 .mr-auto { margin-right:auto!important; }
 .mb-auto { margin-bottom:auto!important; }

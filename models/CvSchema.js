@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 
 const CvModel = new Schema({
     CVName: { type: String, required: true },
+    CVLang:{type: String,default:'ar'},
     CVFullName:{type:String,default:''},
     CVProfile:{type:String,default:''},
     CVAddress:{type:String,default:''},

@@ -2,6 +2,41 @@ extends ../base
 
 block style
     link(rel="stylesheet", href="/templates/grasso.css")
+    style.
+        html { 
+            print-color-adjust:exact;
+            -webkit-print-color-adjust: exact;
+        }
+        p {
+            margin: 0;
+        }
+        .b-border {
+            border-bottom: 1px black solid
+        }
+
+        .l-border {
+            border-left: 1px black solid;
+        }
+
+        .full-name {
+            font-size: 70px;
+        }
+
+        .skills-section,
+        .awards-section,
+        .education-section,
+        .experience-section,
+        .org-section,
+        .profile-section,
+        .proj-section,
+        .reff-section,
+        .skills-section {
+            width: fit-content;
+        }
+
+        .section-title {
+            font-size: 38px
+        }
     link(rel="stylesheet", href="/templates/sizing.css")
 block content
     .container

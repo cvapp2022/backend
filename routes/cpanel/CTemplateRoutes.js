@@ -13,6 +13,10 @@ router.get('/new',CTemplateController.NewGet)
 
 router.get('/delete/:templateId',CTemplateController.Delete)
 
+router.get('/update/:templateId',CTemplateController.UpdateGet)
+
+router.post('/update/:templateId',CTemplateController.UpdatePost)
+
 const pUpload = upload.fields([{ name: 'templateThumbI', maxCount: 1 ,fieldSize:2046}])
 router.post('/new',pUpload,validate.TemplateValidate,CTemplateController.NewPost)
 

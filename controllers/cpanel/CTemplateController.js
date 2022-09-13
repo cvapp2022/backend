@@ -87,6 +87,52 @@ exports.Delete=function(req,res){
             return res.redirect('/Cpanel/Templates/list')
         }
     })
+}
 
+exports.UpdateGet=function(req,res){
+
+    //validate params
+    var templateId=req.params.templateId;
+
+    TemplateModel.findById(templateId,function(err,result){
+
+        if(!err){
+
+            return res.render('cpanel/templates/templateOne',{template:result})
+
+        }
+
+    })
+
+}
+
+exports.UpdatePost=function(req,res){
+
+    //validate params
+    var templateId=req.params.templateId;
+
+    //validate inputs 
+    const errors = validationResult(req);
+    if (errors.errors.length > 0 ) {
+        return res.status(400).json({
+            success: false,
+            payload: { err: errors.errors, body: req.body },
+            msg: 'Validation x Error'
+        });
+    } 
+
+    //find template and update 
+    //{"templateNameI":"grasso","templateThumbI":"","templatePaidI":"free","templatePriceI":"0","templateForI":"cv","templateDescI":" sdasdasd"}
+    var update = {
+        TemplateName:req.body.templateNameI,
+        TemplateDesc:req.body.templateDescI,
+        TemplateFor:req.body.templateForI,
+        TemplatePrice:req.body.templatePriceI,
+        isPaid:Boolean(req.body.templatePaidI)
+    }
+    TemplateModel.findOneAndUpdate({_id:templateId},update,{new:true},function(err,result){
+       
+        return res.render('cpanel/templates/templateOne',{template:result})
+    })
 
 }

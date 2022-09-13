@@ -1,0 +1,21 @@
+*{
+    font-weight: bold;
+}
+p{
+    margin-bottom:2px !important ;
+}
+
+.section-title{
+    color: #008cff !important;
+    font-weight: bolder;
+    margin-top: 6px !important;
+    margin-bottom:14px !important ;
+}
+
+.item-title{
+    font-weight: bolder !important;
+}
+
+.date{
+    color: #a3a3a3 !important;
+}

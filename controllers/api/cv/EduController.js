@@ -101,6 +101,7 @@ exports.Update = function(req,res,next){
         EduTitle:req.body.EduTitleI,
         EduDesc:req.body.EduDescI, 
         EduFrom:req.body.EduFromI,
+        EduAt:req.body.EduAtI,
         EduTo:req.body.EduToI,
     }
 

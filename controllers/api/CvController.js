@@ -3,6 +3,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 const { google } = require('googleapis');
 const stream = require('stream');
 var pdf = require('html-pdf');
+const path = require('path');
 const CvModel = require('../../models/CvSchema');
 const CvMetaModel = require('../../models/cv/CvMetaSchema')
 const UserModel = require('../../models/UserSchema');
@@ -17,6 +18,8 @@ const AwModel = require('../../models/cv/AwSchema');
 
 const facades = require('../../others/facades');
 const population = require('../../others/populations')
+const templateTranslate=require('../../others/templateText.json')
+
 
 
 
@@ -611,7 +614,7 @@ exports.SetTemplate = function (req, res) {
         });
     }
 
-    CvModel.findOneAndUpdate({ _id: CvId }, { CVTemplate: newTemplate }, function (err, result) {
+    CvModel.findOneAndUpdate({ _id: CvId }, { CVTemplate: newTemplate },{new: true}, function (err, result) {
 
         if (!err && result) {
             return res.json({
@@ -623,6 +626,39 @@ exports.SetTemplate = function (req, res) {
     }).populate(population.CvPopulate)
 }
 
+
+exports.SetLang=function(req,res){
+    
+    //validate param 
+    var CvId = new ObjectId(req.params.cvId);
+    if (!ObjectId.isValid(CvId)) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'Param not valid'
+        });
+    }
+    //validate input
+    var newLang = req.body.LangI;
+    if (!newLang) {
+        return res.json({
+            success: false,
+            payload: null,
+            msg: 'lang is required'
+        });
+    }
+
+    CvModel.findOneAndUpdate({ _id: CvId }, { CVLang: newLang },{new: true}, function (err, result) {
+
+        if (!err && result) {
+            return res.json({
+                success: true,
+                payload: result,
+                msg: 'Cv Language Successfully updated'+newLang
+            });
+        }
+    }).populate(population.CvPopulate)
+}
 
 
 exports.Render = function (req, res) {
@@ -639,17 +675,21 @@ exports.Render = function (req, res) {
 
     CvModel.findOne({ _id: CvId }, function (err, result) {
         console.log(err)
-        return res.render('templates/cv/' + result.CVTemplate.TemplateName, { cv: result },
+        return res.render('templates/cv/' + result.CVTemplate.TemplateName + '/'+result.CVLang+'.pug', { cv: result,lang:result.CVLang,translate:templateTranslate },
             ((err, html) => {
                 console.log(err)
                 var options = {
+                    base:'http://127.0.0.1:5000',
+                    width: '210mm',
+                    height: '297mm',
                     format: "A4",
                     border: 0,
                     paginationOffset: 1,
                     type: 'pdf',
+                    localUrlAccess: true,
                 }
                 pdf.create(html, options).toBuffer(function (err, buffer) {
-                    console.log(err)
+                    console.log(err,'from pdf created')
                     res.set({
                         "Content-Type": "application/pdf",
                         "Content-Disposition": "attachment; filename=test.pdf"

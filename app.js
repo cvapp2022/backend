@@ -58,6 +58,9 @@ const BlogPostRoutes = require('./routes/api/v1/blog/PostRoutes')
 const RepoSkillRoutes = require('./routes/api/v1/repo/SkillRepoRoutes')
 const RepoPositionRoutes=require('./routes/api/v1/repo/PositionRepoRoutes')
 
+//template
+const TemplateRoutes=require('./routes/api/v1/TemplateRoutes')
+
 //cpanel routes 
 const CpanelRoutes = require('./routes/cpanel/CpanelRoutes')
 const CUsersRoutes = require('./routes/cpanel/CUsersRoutes')
@@ -215,6 +218,9 @@ app.use('/api/v1/Mn/Program', MnPorgramRoutes)
 app.use('/api/v1/Mn/Meet', MnMeetRoutes)
 app.use('/api/v1/Mn/Session', MnMeetSessionRoutes)
 app.use('/api/v1/Mn/Rate', MnMeetRateRoutes)
+
+app.use('/api/v1/Order/Template/',TemplateRoutes)
+
 
 app.use('/api/v1/blog/Post', BlogPostRoutes)
 
